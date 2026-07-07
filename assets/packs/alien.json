@@ -1,0 +1,11 @@
+{
+  "id": "alien",
+  "name": "Aliens",
+  "premium": true,
+  "description": "Original cosmic Inklings — round, friendly and one of a kind.",
+  "variants": [
+    { "id": "default", "name": "Aliens A" },
+    { "id": "b", "name": "Aliens B" },
+    { "id": "c", "name": "Aliens C" }
+  ]
+}

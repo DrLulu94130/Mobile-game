@@ -1,0 +1,11 @@
+{
+  "id": "classic",
+  "name": "Classic",
+  "premium": false,
+  "description": "The original round, white Inkling with big curious eyes.",
+  "variants": [
+    { "id": "default", "name": "Inkling" },
+    { "id": "blink", "name": "Blinky" },
+    { "id": "tall", "name": "Longo" }
+  ]
+}

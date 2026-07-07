@@ -1,0 +1,11 @@
+{
+  "id": "monster",
+  "name": "Monsters",
+  "premium": true,
+  "description": "Original lovable Inklings — round, friendly and one of a kind.",
+  "variants": [
+    { "id": "default", "name": "Monsters A" },
+    { "id": "b", "name": "Monsters B" },
+    { "id": "c", "name": "Monsters C" }
+  ]
+}

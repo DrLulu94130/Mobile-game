@@ -1,0 +1,11 @@
+{
+  "id": "robot",
+  "name": "Robots",
+  "premium": true,
+  "description": "Original mechanical Inklings — round, friendly and one of a kind.",
+  "variants": [
+    { "id": "default", "name": "Robots A" },
+    { "id": "b", "name": "Robots B" },
+    { "id": "c", "name": "Robots C" }
+  ]
+}

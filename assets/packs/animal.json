@@ -1,0 +1,11 @@
+{
+  "id": "animal",
+  "name": "Animals",
+  "premium": true,
+  "description": "Original cuddly Inklings — round, friendly and one of a kind.",
+  "variants": [
+    { "id": "default", "name": "Animals A" },
+    { "id": "b", "name": "Animals B" },
+    { "id": "c", "name": "Animals C" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "ghost",
+  "name": "Ghosts",
+  "premium": true,
+  "description": "Original spooky Inklings — round, friendly and one of a kind.",
+  "variants": [
+    { "id": "default", "name": "Ghosts A" },
+    { "id": "b", "name": "Ghosts B" },
+    { "id": "c", "name": "Ghosts C" }
+  ]
+}

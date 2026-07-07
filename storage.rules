@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Cloud Storage rules for Inkognito.
+//
+// Challenge images are world-readable (they are shared publicly) but may only
+// be written by a signed-in user, capped at 8 MB and restricted to images.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isImageUnder(maxBytes) {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < maxBytes;
+    }
+
+    match /challenges/{challengeId}/{fileName} {
+      allow read: if true;
+      allow write: if isSignedIn() && isImageUnder(8 * 1024 * 1024);
+    }
+
+    match /avatars/{uid}.jpg {
+      allow read: if true;
+      allow write: if isSignedIn() &&
+                      request.auth.uid == uid &&
+                      isImageUnder(4 * 1024 * 1024);
+    }
+  }
+}

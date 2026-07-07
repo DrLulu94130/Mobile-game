@@ -1,0 +1,11 @@
+{
+  "id": "dragon",
+  "name": "Dragons",
+  "premium": true,
+  "description": "Original scaly Inklings — round, friendly and one of a kind.",
+  "variants": [
+    { "id": "default", "name": "Dragons A" },
+    { "id": "b", "name": "Dragons B" },
+    { "id": "c", "name": "Dragons C" }
+  ]
+}

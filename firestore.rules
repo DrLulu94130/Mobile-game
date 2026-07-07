@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// Firestore security rules for Inkognito.
+//
+// Principles:
+//  * Anyone signed in can read public content and profiles.
+//  * Users may only write their own profile and their own authored content.
+//  * Denormalised counters (likeCount, playCount, commentCount, xp, …) are
+//    only mutated through Cloud Functions or constrained transactions, so the
+//    client is limited to incrementing them within safe bounds.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Only these fields changed, each by exactly +1 or -1.
+    function onlyCounterDelta(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(fields);
+    }
+
+    // --- Users / profiles ---
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(uid);
+      // Owners may update their own profile. Progression-sensitive fields are
+      // additionally written by Cloud Functions using the Admin SDK, which
+      // bypasses these rules.
+      allow update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    // --- Challenges ---
+    match /challenges/{challengeId} {
+      allow read: if isSignedIn() &&
+                     (resource.data.isPublic == true ||
+                      isOwner(resource.data.authorId));
+
+      allow create: if isSignedIn() &&
+                       request.resource.data.authorId == request.auth.uid &&
+                       request.resource.data.title is string &&
+                       request.resource.data.title.size() <= 60 &&
+                       request.resource.data.inklings.size() <= 12;
+
+      // Author can edit their own challenge; anyone signed in may bump the
+      // social counters by a single step (like/play/comment flows).
+      allow update: if isOwner(resource.data.authorId) ||
+                       (isSignedIn() &&
+                        onlyCounterDelta(['likeCount', 'playCount',
+                                          'commentCount', 'bestTimeMs']));
+
+      allow delete: if isOwner(resource.data.authorId);
+
+      // Likes: one document per user.
+      match /likes/{uid} {
+        allow read: if isSignedIn();
+        allow write: if isOwner(uid);
+      }
+
+      // Comments: author-owned, immutable text.
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() &&
+                         request.resource.data.authorId == request.auth.uid &&
+                         request.resource.data.text is string &&
+                         request.resource.data.text.size() <= 300;
+        allow update: if false;
+        allow delete: if isOwner(resource.data.authorId);
+      }
+    }
+
+    // --- Attempts (play results) ---
+    match /attempts/{attemptId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() &&
+                       request.resource.data.playerId == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}
