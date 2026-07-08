@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:inkognito/l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../premium/data/purchase_repository.dart';
-import '../../domain/entities/inkling_species.dart';
-import '../../../../shared/widgets/inkling_avatar.dart';
 import '../state/editor_controller.dart';
 import '../state/editor_state.dart';
 
-/// The bottom control surface of the editor: tool switcher, contextual panels
-/// (colour palette, brush size) and the creature/pack picker.
+/// The bottom control surface of the editor: tool switcher and contextual
+/// panels (colour palette, brush size, creature size). The Add button jumps
+/// straight into the 3D pose booth.
 class EditorToolbars extends StatelessWidget {
   const EditorToolbars({
     required this.state,
     required this.controller,
-    required this.onAddInkling,
+    required this.onAdd,
     required this.onAutoColor,
     required this.onSampleFromCanvas,
     super.key,
@@ -23,7 +20,7 @@ class EditorToolbars extends StatelessWidget {
 
   final EditorState state;
   final EditorController controller;
-  final void Function(InklingSpecies) onAddInkling;
+  final VoidCallback onAdd;
   final VoidCallback onAutoColor;
   final VoidCallback onSampleFromCanvas;
 
@@ -47,6 +44,26 @@ class EditorToolbars extends StatelessWidget {
               onSample: onSampleFromCanvas,
             ),
           const SizedBox(height: 10),
+          // Creature size slider (move tool + selection).
+          if (hasSelection && state.tool == EditorTool.move &&
+              !state.zoomEnabled)
+            Row(
+              children: [
+                const Icon(Icons.photo_size_select_small,
+                    color: Colors.white70, size: 18),
+                Expanded(
+                  child: Slider(
+                    value: state.selected!.size.clamp(0.05, 0.9),
+                    min: 0.05,
+                    max: 0.9,
+                    onChanged: (v) => controller.transformSelected(size: v),
+                    onChangeEnd: (_) => controller.endTransform(),
+                  ),
+                ),
+                const Icon(Icons.photo_size_select_large,
+                    color: Colors.white70, size: 22),
+              ],
+            ),
           // Object actions (only when an Inkling is selected).
           if (hasSelection)
             Row(
@@ -108,24 +125,12 @@ class EditorToolbars extends StatelessWidget {
                 icon: Icons.add_reaction_outlined,
                 label: l.toolAdd,
                 active: false,
-                onTap: () => _openPackPicker(context),
+                onTap: onAdd,
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  void _openPackPicker(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      isScrollControlled: true,
-      builder: (_) => _PackPicker(onPick: (s) {
-        Navigator.pop(context);
-        onAddInkling(s);
-      }),
     );
   }
 }
@@ -342,95 +347,3 @@ class _ActionChip extends StatelessWidget {
   }
 }
 
-/// Grid of character packs; premium packs are marked with a lock.
-class _PackPicker extends ConsumerWidget {
-  const _PackPicker({required this.onPick});
-  final void Function(InklingSpecies) onPick;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final premium = ref.watch(isPremiumProvider).valueOrNull ?? false;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).pickAnInkling,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 12),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              children: [
-                for (final species in InklingSpecies.values)
-                  _PackTile(
-                    species: species,
-                    locked: species.premium && !premium,
-                    onTap: () => onPick(species),
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PackTile extends StatelessWidget {
-  const _PackTile({
-    required this.species,
-    required this.locked,
-    required this.onTap,
-  });
-  final InklingSpecies species;
-  final bool locked;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: locked ? null : onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.ink.withValues(alpha: 0.15)),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Opacity(
-                  opacity: locked ? 0.4 : 1,
-                  child: InklingAvatar(species: species, size: 54),
-                ),
-                const SizedBox(height: 4),
-                Text(species.label, style: const TextStyle(fontSize: 12)),
-              ],
-            ),
-            if (locked)
-              const Positioned(
-                top: 8,
-                right: 8,
-                child: Icon(Icons.lock, size: 16, color: AppColors.glow),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -8,6 +8,7 @@ import '../../features/community/presentation/screens/feed_screen.dart';
 import '../../features/daily/presentation/screens/daily_screen.dart';
 import '../../features/editor/presentation/screens/create_screen.dart';
 import '../../features/editor/presentation/screens/editor_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/leaderboard/presentation/screens/leaderboard_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/onboarding/presentation/screens/splash_screen.dart';
@@ -17,11 +18,9 @@ import '../../features/premium/presentation/screens/premium_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/progression/presentation/screens/badges_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../../shared/widgets/home_shell.dart';
 import 'routes.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
-final _shellKey = GlobalKey<NavigatorState>();
 
 /// Provides the app's [GoRouter], rebuilt when auth state changes so that
 /// redirect guards stay in sync with the signed-in user.
@@ -37,21 +36,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final loggedIn = authAsync.valueOrNull != null;
       final loc = state.matchedLocation;
 
-      final onboardingRoutes = {
-        Routes.splash,
-        Routes.onboarding,
-        Routes.signIn,
-      };
-      final onOnboarding = onboardingRoutes.contains(loc);
+      final entryRoutes = {Routes.splash, Routes.onboarding, Routes.signIn};
 
-      // While the auth state is resolving, keep the splash visible.
-      if (authAsync.isLoading && loc == Routes.splash) return null;
-
-      if (!loggedIn && !onOnboarding) return Routes.signIn;
-      if (loggedIn && (loc == Routes.signIn || loc == Routes.splash)) {
-        return Routes.feed;
+      // Signed in: any entry route funnels straight into the game.
+      if (loggedIn) {
+        return entryRoutes.contains(loc) ? Routes.home : null;
       }
-      return null;
+
+      // Signed out: hold on the splash — it signs the player in anonymously
+      // in the background (no login screens in the game flow).
+      return loc == Routes.splash ? null : Routes.splash;
     },
     routes: [
       GoRoute(
@@ -67,45 +61,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const OnboardingScreen(startOnSignIn: true),
       ),
 
-      // Bottom-nav shell.
-      StatefulShellRoute.indexedStack(
-        parentNavigatorKey: _rootKey,
-        builder: (context, state, navShell) => HomeShell(shell: navShell),
-        branches: [
-          StatefulShellBranch(
-            navigatorKey: _shellKey,
-            routes: [
-              GoRoute(
-                path: Routes.feed,
-                builder: (_, __) => const FeedScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.daily,
-                builder: (_, __) => const DailyScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.leaderboard,
-                builder: (_, __) => const LeaderboardScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.profile,
-                builder: (_, __) => const ProfileScreen(),
-              ),
-            ],
-          ),
-        ],
+      // The game main menu and its secondary screens.
+      GoRoute(
+        path: Routes.home,
+        builder: (_, __) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: Routes.feed,
+        builder: (_, __) => const FeedScreen(),
+      ),
+      GoRoute(
+        path: Routes.daily,
+        builder: (_, __) => const DailyScreen(),
+      ),
+      GoRoute(
+        path: Routes.leaderboard,
+        builder: (_, __) => const LeaderboardScreen(),
+      ),
+      GoRoute(
+        path: Routes.profile,
+        builder: (_, __) => const ProfileScreen(),
       ),
 
       // Full-screen flows pushed above the shell.

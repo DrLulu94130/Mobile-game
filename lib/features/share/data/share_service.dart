@@ -66,7 +66,7 @@ class ShareService {
     if (scheme != null && await _canLaunch(scheme)) {
       await Share.shareXFiles(
         [XFile(file.path)],
-        text: 'Find the hidden Inklings! $link',
+        text: 'INKOGNITO — Try to find the hidden creature! $link',
         subject: title,
       );
       return;
@@ -74,7 +74,7 @@ class ShareService {
 
     await Share.shareXFiles(
       [XFile(file.path)],
-      text: 'Can you find them? $title — $link',
+      text: 'INKOGNITO — Try to find the hidden creature! "$title" $link',
     );
   }
 

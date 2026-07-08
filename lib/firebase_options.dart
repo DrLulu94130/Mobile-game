@@ -35,13 +35,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_ME',
-    appId: '1:000000000000:android:0000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'inkognito-app',
-    storageBucket: 'inkognito-app.appspot.com',
+    apiKey: 'AIzaSyA2Ot_3kNHhgtnla9dJg6B7d9FvAi3xR2c',
+    appId: '1:100878933421:android:abd56d30a618c428731524',
+    messagingSenderId: '100878933421',
+    projectId: 'inkognito-20ba0',
+    storageBucket: 'inkognito-20ba0.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'REPLACE_ME',
     appId: '1:000000000000:ios:0000000000000000000000',

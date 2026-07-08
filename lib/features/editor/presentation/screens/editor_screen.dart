@@ -11,14 +11,15 @@ import '../../../../core/ads/ad_service.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../auth/data/auth_repository.dart';
 import '../../../premium/data/purchase_repository.dart';
 import '../../../share/presentation/share_sheet.dart';
 import '../../domain/entities/inkling_species.dart';
 import '../../domain/entities/placed_inkling.dart';
+import '../../domain/photo_framing.dart';
 import '../state/editor_controller.dart';
 import '../state/editor_state.dart';
 import '../state/publish_controller.dart';
+import 'pose_booth_screen.dart';
 import '../widgets/editor_canvas.dart';
 import '../widgets/editor_toolbars.dart';
 
@@ -63,7 +64,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     if (mounted) setState(() => _decodedPhoto = decoded);
   }
 
-  double get _aspect {
+  /// Aspect of the source photo (not the canvas — the canvas is always the
+  /// story-style [PhotoFraming.canvasAspect]).
+  double get _photoAspect {
     final p = _decodedPhoto;
     if (p == null) return 3 / 4;
     return p.width / p.height;
@@ -78,11 +81,21 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   // --- Colour sampling for pipette / auto-select ---
 
+  /// Maps a normalised canvas point through the current photo framing and
+  /// samples the photo pixel there.
   Color _sampleAt(Offset normalised) {
     final p = _decodedPhoto;
     if (p == null) return AppColors.ink;
-    final x = (normalised.dx * p.width).clamp(0, p.width - 1).toInt();
-    final y = (normalised.dy * p.height).clamp(0, p.height - 1).toInt();
+    final s = ref.read(editorControllerProvider);
+    final photoNorm = PhotoFraming.canvasNormToPhotoNorm(
+      normalised,
+      const Size(PhotoFraming.canvasAspect, 1),
+      _photoAspect,
+      s.photoScale,
+      s.photoPan,
+    );
+    final x = (photoNorm.dx * p.width).clamp(0, p.width - 1).toInt();
+    final y = (photoNorm.dy * p.height).clamp(0, p.height - 1).toInt();
     final px = p.getPixel(x, y);
     return Color.fromARGB(255, px.r.toInt(), px.g.toInt(), px.b.toInt());
   }
@@ -92,22 +105,22 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final p = _decodedPhoto;
     final sel = ref.read(editorControllerProvider).selected;
     if (p == null || sel == null) return AppColors.ink;
-    final cx = sel.center.dx * p.width;
-    final cy = sel.center.dy * p.height;
-    final radius = (sel.size / 2) * math.min(p.width, p.height);
     var r = 0, g = 0, b = 0, n = 0;
     const samples = 24;
     for (var i = 0; i < samples; i++) {
       final angle = (i / samples) * 2 * math.pi;
       for (final f in const [0.3, 0.7]) {
-        final x =
-            (cx + radius * f * math.cos(angle)).clamp(0, p.width - 1).toInt();
-        final y =
-            (cy + radius * f * math.sin(angle)).clamp(0, p.height - 1).toInt();
-        final px = p.getPixel(x, y);
-        r += px.r.toInt();
-        g += px.g.toInt();
-        b += px.b.toInt();
+        // Ring points in canvas-normalised space (the canvas is 9:16, so the
+        // shortest side is the width; sizes are fractions of it).
+        final ringNorm = Offset(
+          sel.center.dx + (sel.size / 2) * f * math.cos(angle),
+          sel.center.dy +
+              (sel.size / 2) * f * math.sin(angle) * PhotoFraming.canvasAspect,
+        );
+        final c = _sampleAt(ringNorm);
+        r += (c.r * 255).round();
+        g += (c.g * 255).round();
+        b += (c.b * 255).round();
         n++;
       }
     }
@@ -122,13 +135,20 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     controller.setTool(EditorTool.brush);
   }
 
-  void _addInkling(InklingSpecies species) {
+  Future<void> _addInkling() async {
     final state = ref.read(editorControllerProvider);
     if (state.inklings.length >= _maxInklings) {
       _showLimitReached();
       return;
     }
-    ref.read(editorControllerProvider.notifier).addInkling(species);
+    // Pose the 3D character first; the capture becomes the creature's body.
+    final spriteId = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const PoseBoothScreen()),
+    );
+    if (spriteId == null || !mounted) return;
+    ref
+        .read(editorControllerProvider.notifier)
+        .addInkling(InklingSpecies.classic, spriteId: spriteId);
   }
 
   void _showLimitReached() {
@@ -197,6 +217,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           title: title,
           isPublic: true,
           hd: premium,
+          photoScale: state.photoScale,
+          photoPan: state.photoPan,
         );
 
     if (!mounted) return;
@@ -296,9 +318,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           Expanded(
             child: Center(
               child: AspectRatio(
-                aspectRatio: _aspect,
+                // Story-style vertical stage, whatever the source photo.
+                aspectRatio: PhotoFraming.canvasAspect,
                 child: EditorCanvas(
                   photo: _photoProvider,
+                  photoAspect: _photoAspect,
                   state: state,
                   controller: controller,
                   onSampleColor: _onSampleColor,
@@ -309,7 +333,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           EditorToolbars(
             state: state,
             controller: controller,
-            onAddInkling: _addInkling,
+            onAdd: _addInkling,
             onAutoColor: () {
               final color = _autoColorForSelected();
               controller.setBrushColor(color);

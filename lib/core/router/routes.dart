@@ -4,7 +4,10 @@ abstract class Routes {
   static const String onboarding = '/onboarding';
   static const String signIn = '/sign-in';
 
-  // Shell tabs
+  /// The game main menu.
+  static const String home = '/home';
+
+  // Secondary screens
   static const String feed = '/feed';
   static const String daily = '/daily';
   static const String leaderboard = '/leaderboard';

@@ -7,6 +7,7 @@ import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../editor/domain/entities/inkling_species.dart';
 import '../../../../shared/widgets/app_widgets.dart';
 import '../../../../shared/widgets/inkling_avatar.dart';
+import '../../../../shared/widgets/mascot_3d.dart';
 
 /// Combined onboarding carousel + authentication entry point.
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -27,6 +28,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           species: InklingSpecies.classic,
           title: l.onboardTitle1,
           body: l.onboardBody1,
+          hero3D: true,
         ),
         _Slide(
           species: InklingSpecies.ghost,
@@ -90,11 +92,15 @@ class _Slide extends StatelessWidget {
     required this.species,
     required this.title,
     required this.body,
+    this.hero3D = false,
   });
 
   final InklingSpecies species;
   final String title;
   final String body;
+
+  /// Renders the live 3D mascot instead of the flat avatar preview.
+  final bool hero3D;
 
   @override
   Widget build(BuildContext context) {
@@ -103,14 +109,16 @@ class _Slide extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(36),
-            decoration: BoxDecoration(
-              color: AppColors.ink.withValues(alpha: 0.10),
-              shape: BoxShape.circle,
-            ),
-            child: InklingAvatar(species: species, size: 140),
-          ),
+          hero3D
+              ? const _MascotStage()
+              : Container(
+                  padding: const EdgeInsets.all(36),
+                  decoration: BoxDecoration(
+                    color: AppColors.ink.withValues(alpha: 0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: InklingAvatar(species: species, size: 140),
+                ),
           const SizedBox(height: 40),
           Text(
             title,
@@ -129,6 +137,58 @@ class _Slide extends StatelessWidget {
                 .bodyLarge
                 ?.copyWith(color: AppColors.textMuted),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A glowing pedestal that showcases the live 3D mascot.
+class _MascotStage extends StatelessWidget {
+  const _MascotStage();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 280,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Soft brand-coloured halo behind the character.
+          Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.splash.withValues(alpha: 0.32),
+                  AppColors.ink.withValues(alpha: 0.14),
+                  AppColors.ink.withValues(alpha: 0.0),
+                ],
+                stops: const [0.0, 0.55, 1.0],
+              ),
+            ),
+          ),
+          // Grounding shadow so the mascot feels like it stands on a surface.
+          Positioned(
+            bottom: 28,
+            child: Container(
+              width: 150,
+              height: 24,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.26),
+                    Colors.black.withValues(alpha: 0.0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // The live, auto-rotating chameleon.
+          const SizedBox(width: 270, height: 270, child: Mascot3D()),
         ],
       ),
     );

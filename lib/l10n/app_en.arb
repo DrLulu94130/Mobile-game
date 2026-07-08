@@ -1,6 +1,11 @@
 {
   "@@locale": "en",
   "appTagline": "Hide. Camouflage. Challenge.",
+  "homeTagline": "Paint yourself. Blend in. Vanish.",
+  "homeHideCta": "Hide!",
+  "homeHideSub": "Camouflage yourself in a photo",
+  "homeSeekCta": "Seek!",
+  "homeSeekSub": "Hunt creatures hidden by others",
   "getStarted": "Get started",
   "onboardTitle1": "Hide Inklings in your photos",
   "onboardBody1": "Drop original little creatures anywhere in your own pictures.",

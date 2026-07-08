@@ -42,6 +42,11 @@ class EditorController extends StateNotifier<EditorState> {
   void toggleZoom() =>
       state = state.copyWith(zoomEnabled: !state.zoomEnabled);
 
+  /// Reframes the photo inside the vertical canvas (zoom + pan). The caller
+  /// is responsible for clamping via [PhotoFraming].
+  void setPhotoTransform({double? scale, Offset? pan}) =>
+      state = state.copyWith(photoScale: scale, photoPan: pan);
+
   void select(String? id) {
     if (id == null) {
       state = state.copyWith(clearSelection: true);
@@ -52,7 +57,11 @@ class EditorController extends StateNotifier<EditorState> {
 
   // --- Placement ---
 
-  void addInkling(InklingSpecies species, {String variantId = 'default'}) {
+  void addInkling(
+    InklingSpecies species, {
+    String variantId = 'default',
+    String? spriteId,
+  }) {
     if (state.inklings.length >= _maxInklings) return;
     final inkling = PlacedInkling(
       id: _uuid.v4(),
@@ -61,6 +70,7 @@ class EditorController extends StateNotifier<EditorState> {
       center: const Offset(0.5, 0.5),
       size: 0.22,
       rotation: 0,
+      spriteId: spriteId,
     );
     _commit([...state.inklings, inkling], select: inkling.id);
   }
@@ -83,6 +93,7 @@ class EditorController extends StateNotifier<EditorState> {
       size: copy.size,
       rotation: copy.rotation,
       strokes: List.of(copy.strokes),
+      spriteId: copy.spriteId,
     );
     _commit([...state.inklings, clone], select: clone.id);
   }

@@ -1,6 +1,11 @@
 {
   "@@locale": "fr",
   "appTagline": "Cache. Camoufle. Défie.",
+  "homeTagline": "Peins-toi. Fonds-toi. Disparais.",
+  "homeHideCta": "Cache-toi !",
+  "homeHideSub": "Camoufle-toi dans une photo",
+  "homeSeekCta": "Cherche-les !",
+  "homeSeekSub": "Traque les créatures cachées par les autres",
   "getStarted": "Commencer",
   "onboardTitle1": "Cache des Inklings dans tes photos",
   "onboardBody1": "Place de petites créatures originales n'importe où dans tes propres images.",

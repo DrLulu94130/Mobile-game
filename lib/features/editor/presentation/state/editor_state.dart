@@ -24,6 +24,8 @@ class EditorState {
     this.canUndo = false,
     this.canRedo = false,
     this.isExporting = false,
+    this.photoScale = 1.0,
+    this.photoPan = Offset.zero,
   });
 
   final List<PlacedInkling> inklings;
@@ -43,6 +45,10 @@ class EditorState {
   final bool canUndo;
   final bool canRedo;
   final bool isExporting;
+
+  /// Framing of the photo inside the fixed vertical canvas (zoom + pan).
+  final double photoScale;
+  final Offset photoPan;
 
   PlacedInkling? get selected {
     for (final i in inklings) {
@@ -65,6 +71,8 @@ class EditorState {
     bool? canUndo,
     bool? canRedo,
     bool? isExporting,
+    double? photoScale,
+    Offset? photoPan,
   }) {
     return EditorState(
       inklings: inklings ?? this.inklings,
@@ -77,6 +85,8 @@ class EditorState {
       canUndo: canUndo ?? this.canUndo,
       canRedo: canRedo ?? this.canRedo,
       isExporting: isExporting ?? this.isExporting,
+      photoScale: photoScale ?? this.photoScale,
+      photoPan: photoPan ?? this.photoPan,
     );
   }
 }

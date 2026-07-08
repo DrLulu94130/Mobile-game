@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/placed_inkling.dart';
+import '../../domain/photo_framing.dart';
 import '../painters/inkling_painter.dart';
 import '../state/editor_controller.dart';
 import '../state/editor_state.dart';
@@ -16,6 +17,7 @@ typedef ColorSampler = void Function(Offset normalisedCanvasPoint);
 class EditorCanvas extends StatefulWidget {
   const EditorCanvas({
     required this.photo,
+    required this.photoAspect,
     required this.state,
     required this.controller,
     required this.onSampleColor,
@@ -23,6 +25,11 @@ class EditorCanvas extends StatefulWidget {
   });
 
   final ImageProvider photo;
+
+  /// Width / height of the source photo, used to cover-fit it inside the
+  /// fixed vertical canvas.
+  final double photoAspect;
+
   final EditorState state;
   final EditorController controller;
   final ColorSampler onSampleColor;
@@ -37,6 +44,11 @@ class _EditorCanvasState extends State<EditorCanvas> {
   double? _baseSize;
   double? _baseRotation;
   Offset? _gestureStartFocal;
+
+  // When the move gesture starts on empty space, it reframes the photo.
+  bool _framingPhoto = false;
+  double? _basePhotoScale;
+  Offset? _basePhotoPan;
 
   Size _canvas = Size.zero;
   final TransformationController _viewer = TransformationController();
@@ -55,10 +67,20 @@ class _EditorCanvasState extends State<EditorCanvas> {
         final tool = widget.state.tool;
         final zoom = widget.state.zoomEnabled;
 
+        final photoRect = PhotoFraming.destRect(
+          _canvas,
+          widget.photoAspect,
+          widget.state.photoScale,
+          widget.state.photoPan,
+        );
         Widget stack = Stack(
           fit: StackFit.expand,
+          clipBehavior: Clip.hardEdge,
           children: [
-            Image(image: widget.photo, fit: BoxFit.cover),
+            Positioned.fromRect(
+              rect: photoRect,
+              child: Image(image: widget.photo, fit: BoxFit.fill),
+            ),
             ...widget.state.inklings.map(_buildInkling),
           ],
         );
@@ -138,22 +160,46 @@ class _EditorCanvasState extends State<EditorCanvas> {
   }
 
   void _onTransformStart(ScaleStartDetails details) {
+    _framingPhoto = false;
     // Select what is under the initial focal point if nothing is selected.
     final id = _inklingAt(details.localFocalPoint);
     if (id != null && id != widget.state.selectedId) {
       widget.controller.select(id);
     }
-    final sel = widget.controller.snapshot.selected;
-    if (sel == null) return;
+    final sel = id == null ? null : widget.controller.snapshot.selected;
+    _gestureStartFocal = details.localFocalPoint;
+    if (sel == null) {
+      // Empty space: the gesture reframes the photo instead.
+      widget.controller.select(null);
+      _framingPhoto = true;
+      _basePhotoScale = widget.state.photoScale;
+      _basePhotoPan = widget.state.photoPan;
+      return;
+    }
     _baseCenter = sel.center;
     _baseSize = sel.size;
     _baseRotation = sel.rotation;
-    _gestureStartFocal = details.localFocalPoint;
   }
 
   void _onTransformUpdate(ScaleUpdateDetails details) {
-    if (_baseCenter == null || _gestureStartFocal == null) return;
+    if (_gestureStartFocal == null) return;
     final deltaPx = details.localFocalPoint - _gestureStartFocal!;
+
+    if (_framingPhoto) {
+      final scale = (_basePhotoScale! * details.scale)
+          .clamp(PhotoFraming.minScale, PhotoFraming.maxScale);
+      final pan = PhotoFraming.clampPan(
+        _canvas,
+        widget.photoAspect,
+        scale,
+        _basePhotoPan! +
+            Offset(deltaPx.dx / _canvas.width, deltaPx.dy / _canvas.height),
+      );
+      widget.controller.setPhotoTransform(scale: scale, pan: pan);
+      return;
+    }
+
+    if (_baseCenter == null) return;
     final newCenter = Offset(
       _baseCenter!.dx + deltaPx.dx / _canvas.width,
       _baseCenter!.dy + deltaPx.dy / _canvas.height,

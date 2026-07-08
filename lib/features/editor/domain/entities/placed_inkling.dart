@@ -18,11 +18,16 @@ class PlacedInkling {
     required this.size,
     required this.rotation,
     this.strokes = const [],
+    this.spriteId,
   });
 
   final String id;
   final InklingSpecies species;
   final String variantId;
+
+  /// When set, the body is a captured 3D-chameleon sprite (see
+  /// `SpriteRegistry`) instead of the legacy vector silhouette.
+  final String? spriteId;
 
   /// Centre of the Inkling in normalised canvas space (0..1, 0..1).
   final Offset center;
@@ -50,6 +55,7 @@ class PlacedInkling {
       size: size ?? this.size,
       rotation: rotation ?? this.rotation,
       strokes: strokes ?? this.strokes,
+      spriteId: spriteId,
     );
   }
 
@@ -75,6 +81,7 @@ class PlacedInkling {
         'size': size,
         'rotation': rotation,
         'strokes': strokes.map((s) => s.toJson()).toList(),
+        if (spriteId != null) 'spriteId': spriteId,
       };
 
   factory PlacedInkling.fromJson(Map<String, dynamic> json) {
@@ -91,6 +98,7 @@ class PlacedInkling {
       strokes: (json['strokes'] as List? ?? [])
           .map((e) => DrawStroke.fromJson(e as Map<String, dynamic>))
           .toList(),
+      spriteId: json['spriteId'] as String?,
     );
   }
 }

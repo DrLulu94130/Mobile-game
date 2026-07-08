@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart' show Offset;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
@@ -13,6 +14,7 @@ import '../../../challenge/data/storage_service.dart';
 import '../../../challenge/domain/entities/challenge.dart';
 import '../../../progression/data/progression_service.dart';
 import '../../domain/entities/placed_inkling.dart';
+import '../../domain/photo_framing.dart';
 
 /// Immutable output of a successful publish.
 class PublishOutput {
@@ -39,6 +41,8 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
     required String title,
     required bool isPublic,
     bool hd = false,
+    double photoScale = 1.0,
+    Offset photoPan = Offset.zero,
   }) async {
     state = const AsyncLoading();
     try {
@@ -55,12 +59,16 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
         inklings: inklings,
         revealed: false,
         hd: hd,
+        photoScale: photoScale,
+        photoPan: photoPan,
       );
       final revealed = await export.render(
         photo: photo,
         inklings: inklings,
         revealed: true,
         hd: hd,
+        photoScale: photoScale,
+        photoPan: photoPan,
       );
 
       final repo = ref.read(challengeRepositoryProvider);
@@ -88,7 +96,7 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
         camouflagedImageUrl: camoUrl,
         revealedImageUrl: revealUrl,
         inklings: inklings,
-        canvasAspectRatio: photo.width / photo.height,
+        canvasAspectRatio: PhotoFraming.canvasAspect,
         createdAt: DateTime.now(),
         isPublic: isPublic,
         difficulty: _difficulty(inklings),
