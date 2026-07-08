@@ -3,13 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Central theme definition providing light and dark [ThemeData].
+/// Central theme definition. The game ships a single hand-tuned light look;
+/// gameplay screens (editor, play, Discover) draw on their own dark stages.
 abstract class AppTheme {
   static const double radius = 20;
   static const double radiusSmall = 12;
 
   static ThemeData get light => _base(
-        brightness: Brightness.light,
         scheme: const ColorScheme.light(
           primary: AppColors.ink,
           secondary: AppColors.splash,
@@ -23,36 +23,18 @@ abstract class AppTheme {
         surfaceAlt: AppColors.lightSurfaceAlt,
       );
 
-  static ThemeData get dark => _base(
-        brightness: Brightness.dark,
-        scheme: const ColorScheme.dark(
-          primary: AppColors.ink,
-          secondary: AppColors.splash,
-          tertiary: AppColors.glow,
-          surface: AppColors.darkSurface,
-          error: AppColors.error,
-          onPrimary: Colors.white,
-          onSurface: AppColors.textOnDark,
-        ),
-        scaffold: AppColors.darkBg,
-        surfaceAlt: AppColors.darkSurfaceAlt,
-      );
-
   static ThemeData _base({
-    required Brightness brightness,
     required ColorScheme scheme,
     required Color scaffold,
     required Color surfaceAlt,
   }) {
     final textTheme = GoogleFonts.plusJakartaSansTextTheme(
-      brightness == Brightness.dark
-          ? ThemeData.dark().textTheme
-          : ThemeData.light().textTheme,
+      ThemeData.light().textTheme,
     );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: brightness,
+      brightness: Brightness.light,
       colorScheme: scheme,
       scaffoldBackgroundColor: scaffold,
       textTheme: textTheme,

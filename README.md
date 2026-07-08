@@ -34,7 +34,7 @@ the clock.
 | **Deep links** | Shared links (`inkognito://challenge/<id>` and `https://<host>/c/<id>`) open the exact challenge in-app via `app_links`; store fallback for non-users |
 | **Editor zoom** | Pinch/pan inspection mode (`InteractiveViewer`) — zoom in, then draw with precision |
 | **Localisation** | Full English + French (`gen-l10n`), with an in-app language switch |
-| **Polish** | Clean Architecture, Riverpod, GoRouter, responsive, fluid animations, full Dark Mode |
+| **Polish** | Clean Architecture, Riverpod, GoRouter, responsive, fluid animations |
 
 ## 🏗 Architecture
 
@@ -43,7 +43,7 @@ Feature-first **Clean Architecture**:
 ```
 lib/
 ├── core/                 # config, theme, router, errors, utils, DI providers
-├── shared/               # cross-feature widgets (shell, buttons, avatars)
+├── shared/               # cross-feature widgets (buttons, avatars, mascot)
 └── features/
     ├── auth/             # data · domain · presentation
     ├── onboarding/
@@ -70,8 +70,7 @@ Each feature is split into:
 - **presentation** — Riverpod controllers + widgets.
 
 **State management:** Riverpod (`StateNotifier` / `AsyncNotifier` + providers).
-**Navigation:** GoRouter with a `StatefulShellRoute` bottom-nav shell and
-auth-driven redirect guards.
+**Navigation:** GoRouter with auth-driven redirect guards.
 
 ## 🔧 Tech stack
 

@@ -6,45 +6,20 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/routes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../controllers/locale_controller.dart';
-import '../controllers/theme_controller.dart';
 
-/// App settings: theme, language, packs, premium and account actions.
+/// App settings: language, packs, premium and account actions.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
-    final themeMode = ref.watch(themeControllerProvider);
     final locale = ref.watch(localeControllerProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l.settings)),
       body: ListView(
         children: [
-          _SectionHeader(l.appearance),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.system,
-            groupValue: themeMode,
-            onChanged: (m) =>
-                ref.read(themeControllerProvider.notifier).set(m!),
-            title: Text(l.matchSystem),
-          ),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.light,
-            groupValue: themeMode,
-            onChanged: (m) =>
-                ref.read(themeControllerProvider.notifier).set(m!),
-            title: Text(l.light),
-          ),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.dark,
-            groupValue: themeMode,
-            onChanged: (m) =>
-                ref.read(themeControllerProvider.notifier).set(m!),
-            title: Text(l.dark),
-          ),
-          const Divider(),
           _SectionHeader(l.language),
           ListTile(
             leading: const Icon(Icons.language),

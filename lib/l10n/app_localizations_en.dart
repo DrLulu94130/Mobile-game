@@ -273,18 +273,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get appearance => 'Appearance';
-
-  @override
-  String get matchSystem => 'Match system';
-
-  @override
-  String get light => 'Light';
-
-  @override
-  String get dark => 'Dark';
-
-  @override
   String get language => 'Language';
 
   @override

@@ -54,7 +54,7 @@ class ProgressionService {
       final newLevel = levelForXp(newXp);
       final leveledUp = newLevel > user.level;
 
-      final streak = _computeStreak(user.lastActiveDay, user.streakDays);
+      final streak = computeStreak(user.lastActiveDay, user.streakDays);
       final today = _todayKey();
 
       final ctx = BadgeContext(
@@ -64,11 +64,12 @@ class ProgressionService {
         level: newLevel,
         perfectSolves: ((data['perfectSolves'] as num?)?.toInt() ?? 0) +
             perfectSolvesDelta,
-        totalLikes: (data['totalLikes'] as num?)?.toInt() ?? 0,
+        totalLikes:
+            ((data['totalLikes'] as num?)?.toInt() ?? 0) + totalLikesDelta,
       );
-      final earned = BadgeCatalog.earned(ctx);
+      final badges = mergedBadges(user.badgeIds, ctx);
       final newBadges =
-          earned.where((id) => !user.badgeIds.contains(id)).toList();
+          badges.where((id) => !user.badgeIds.contains(id)).toList();
 
       tx.set(
         ref,
@@ -80,7 +81,8 @@ class ProgressionService {
           'challengesCreated': FieldValue.increment(challengesCreatedDelta),
           'challengesSolved': FieldValue.increment(challengesSolvedDelta),
           'perfectSolves': FieldValue.increment(perfectSolvesDelta),
-          'badgeIds': earned,
+          'totalLikes': FieldValue.increment(totalLikesDelta),
+          'badgeIds': badges,
         },
         SetOptions(merge: true),
       );
@@ -113,14 +115,23 @@ class ProgressionService {
     return ((xp - floor) / (ceil - floor)).clamp(0.0, 1.0);
   }
 
+  /// Badges are permanent: once earned they are never revoked, even when the
+  /// underlying stat later regresses (e.g. a broken streak).
+  static List<String> mergedBadges(List<String> existing, BadgeContext ctx) =>
+      {...existing, ...BadgeCatalog.earned(ctx)}.toList();
+
   /// Given the last active day and the streak stored on that day, returns the
-  /// streak value for today.
-  int _computeStreak(String? lastActiveDay, int storedStreak) {
+  /// streak value for [now] (defaults to today).
+  static int computeStreak(
+    String? lastActiveDay,
+    int storedStreak, {
+    DateTime? now,
+  }) {
     if (lastActiveDay == null) return 1;
     final last = DateTime.tryParse(lastActiveDay);
     if (last == null) return 1;
-    final now = DateTime.now();
-    final diff = DateTime(now.year, now.month, now.day)
+    final ref = now ?? DateTime.now();
+    final diff = DateTime(ref.year, ref.month, ref.day)
         .difference(DateTime(last.year, last.month, last.day))
         .inDays;
     if (diff <= 0) return storedStreak == 0 ? 1 : storedStreak; // same day

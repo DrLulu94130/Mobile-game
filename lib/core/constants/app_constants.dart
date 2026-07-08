@@ -40,7 +40,6 @@ abstract class AppConstants {
   static const String attemptsCollection = 'attempts';
   static const String commentsCollection = 'comments';
   static const String likesCollection = 'likes';
-  static const String feedCollection = 'feed';
 
   // Storage paths.
   static String challengeImagePath(String challengeId) =>
