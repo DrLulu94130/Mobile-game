@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/ads/banner_ad_widget.dart';
 import '../../core/router/routes.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -17,8 +19,15 @@ class HomeShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
-      body: shell,
+      body: Column(
+        children: [
+          Expanded(child: shell),
+          // Free-tier banner (renders nothing for Premium users).
+          const SafeArea(top: false, child: BannerAdWidget()),
+        ],
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         heroTag: 'create-fab',
@@ -38,14 +47,14 @@ class HomeShell extends StatelessWidget {
             _NavItem(
               icon: Icons.explore_outlined,
               activeIcon: Icons.explore,
-              label: 'Feed',
+              label: l.navFeed,
               selected: shell.currentIndex == 0,
               onTap: () => _goBranch(0),
             ),
             _NavItem(
               icon: Icons.today_outlined,
               activeIcon: Icons.today,
-              label: 'Daily',
+              label: l.navDaily,
               selected: shell.currentIndex == 1,
               onTap: () => _goBranch(1),
             ),
@@ -53,14 +62,14 @@ class HomeShell extends StatelessWidget {
             _NavItem(
               icon: Icons.leaderboard_outlined,
               activeIcon: Icons.leaderboard,
-              label: 'Ranks',
+              label: l.navRanks,
               selected: shell.currentIndex == 2,
               onTap: () => _goBranch(2),
             ),
             _NavItem(
               icon: Icons.person_outline,
               activeIcon: Icons.person,
-              label: 'Profile',
+              label: l.navProfile,
               selected: shell.currentIndex == 3,
               onTap: () => _goBranch(3),
             ),

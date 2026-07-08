@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -12,14 +13,15 @@ class LeaderboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Rankings',
-              style: TextStyle(fontWeight: FontWeight.w900)),
-          bottom: const TabBar(
-            tabs: [Tab(text: 'Top players'), Tab(text: 'Creators')],
+          title: Text(l.rankings,
+              style: const TextStyle(fontWeight: FontWeight.w900)),
+          bottom: TabBar(
+            tabs: [Tab(text: l.topPlayers), Tab(text: l.creators)],
           ),
         ),
         body: TabBarView(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -12,13 +13,15 @@ class DailyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final daily = ref.watch(dailyChallengesProvider);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          const SliverAppBar(
+          SliverAppBar(
             floating: true,
-            title: Text('Daily', style: TextStyle(fontWeight: FontWeight.w900)),
+            title:
+                Text(l.daily, style: const TextStyle(fontWeight: FontWeight.w900)),
           ),
           SliverToBoxAdapter(
             child: Container(
@@ -28,26 +31,26 @@ class DailyScreen extends ConsumerWidget {
                 gradient: AppColors.brandGradient,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.today, color: Colors.white, size: 32),
-                  SizedBox(width: 14),
+                  const Icon(Icons.today, color: Colors.white, size: 32),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Today's picks",
-                          style: TextStyle(
+                          l.todaysPicks,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
-                          'Fresh puzzles, updated every day. Keep your streak alive!',
-                          style: TextStyle(color: Colors.white70),
+                          l.dailySub,
+                          style: const TextStyle(color: Colors.white70),
                         ),
                       ],
                     ),
@@ -68,11 +71,11 @@ class DailyScreen extends ConsumerWidget {
               ),
             ),
             data: (list) => list.isEmpty
-                ? const SliverFillRemaining(
+                ? SliverFillRemaining(
                     child: StateMessage(
                       icon: Icons.wb_sunny_outlined,
-                      title: 'Nothing yet today',
-                      subtitle: 'Check back later or create the first one.',
+                      title: l.nothingTodayTitle,
+                      subtitle: l.nothingTodayBody,
                     ),
                   )
                 : SliverList.builder(

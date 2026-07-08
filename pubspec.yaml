@@ -30,6 +30,10 @@ dependencies:
 
   # Monetization
   purchases_flutter: ^8.1.0
+  google_mobile_ads: ^5.1.0
+
+  # Deep links
+  app_links: ^6.3.2
 
   # Media & drawing
   image_picker: ^1.1.2
@@ -55,6 +59,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/images/
     - assets/packs/

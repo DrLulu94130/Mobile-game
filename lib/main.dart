@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
+import 'core/ads/ad_service.dart';
 import 'core/config/env.dart';
 import 'firebase_options.dart';
 
@@ -51,9 +52,14 @@ Future<void> main() async {
       // Best-effort billing bootstrap; failure must not block app start.
       await Env.configureBilling();
 
+      final container = ProviderContainer();
+      // Warm up the ads SDK for the Free tier (no-op on failure).
+      unawaited(container.read(adServiceProvider).initialize());
+
       runApp(
-        const ProviderScope(
-          child: InkognitoApp(),
+        UncontrolledProviderScope(
+          container: container,
+          child: const InkognitoApp(),
         ),
       );
     },

@@ -42,6 +42,20 @@ the app:
 Set `minSdkVersion 23` in `android/app/build.gradle` (required by Firebase Auth).
 Place `google-services.json` in `android/app/`.
 
+### AdMob (Android)
+
+Inside `<application>` add the App ID meta-data (this is Google's public **test**
+App ID — replace with your real one for release):
+
+```xml
+<meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="ca-app-pub-3940256099942544~3347511713" />
+```
+
+The ad **unit** ids default to Google's test units in `lib/core/ads/ad_service.dart`;
+override them for release via `--dart-define=ADMOB_BANNER=… ADMOB_INTERSTITIAL=…`.
+
 ## iOS — `ios/Runner/Info.plist`
 
 ```xml
@@ -73,3 +87,19 @@ Place `google-services.json` in `android/app/`.
 Add associated domains (`applinks:inkognito.page.link`) in Xcode → Signing &
 Capabilities, and place `GoogleService-Info.plist` in `ios/Runner/`.
 Set the deployment target to iOS 13+.
+
+### AdMob (iOS)
+
+Add to `Info.plist` (Google's public **test** App ID — replace for release):
+
+```xml
+<key>GADApplicationIdentifier</key>
+<string>ca-app-pub-3940256099942544~1458002511</string>
+```
+
+### Deep links
+
+The in-app `DeepLinkListener` (wired in `app.dart` via `app_links`) handles both
+`inkognito://challenge/<id>` and `https://<host>/c/<id>` and routes to the
+challenge — no extra Dart wiring needed once the intent-filters / associated
+domains above are in place.

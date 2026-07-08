@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_widgets.dart';
@@ -28,6 +29,7 @@ class ResultOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final perfect = found == total;
     final seconds = (durationMs / 1000).toStringAsFixed(1);
     return Container(
@@ -40,7 +42,7 @@ class ResultOverlay extends StatelessWidget {
             children: [
               const SizedBox(height: 12),
               Text(
-                perfect ? 'Perfect! 🏆' : 'Round over',
+                perfect ? l.perfect : l.roundOver,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
@@ -51,15 +53,15 @@ class ResultOverlay extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _DarkStat(value: '$found/$total', label: 'Found'),
-                  _DarkStat(value: '${seconds}s', label: 'Time'),
-                  _DarkStat(value: '$score', label: 'Score'),
+                  _DarkStat(value: '$found/$total', label: l.found),
+                  _DarkStat(value: '${seconds}s', label: l.time),
+                  _DarkStat(value: '$score', label: l.score),
                 ],
               ),
               const SizedBox(height: 24),
-              const Text(
-                'The solution',
-                style: TextStyle(color: Colors.white70),
+              Text(
+                l.theSolution,
+                style: const TextStyle(color: Colors.white70),
               ),
               const SizedBox(height: 8),
               ClipRRect(
@@ -76,16 +78,16 @@ class ResultOverlay extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               GradientButton(
-                label: 'Play again',
+                label: l.playAgain,
                 icon: Icons.replay,
                 onPressed: onReplay,
               ),
               const SizedBox(height: 12),
               TextButton(
                 onPressed: onDone,
-                child: const Text(
-                  'Done',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  l.done,
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,8 +45,9 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('New challenge')),
+      appBar: AppBar(title: Text(l.newChallenge)),
       body: _busy
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -53,24 +55,23 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const StateMessage(
+                  StateMessage(
                     icon: Icons.photo_camera_back_outlined,
-                    title: 'Choose a photo to hide in',
-                    subtitle:
-                        'Pick a busy, colourful scene — it makes camouflage more fun.',
+                    title: l.choosePhotoTitle,
+                    subtitle: l.choosePhotoBody,
                   ),
                   const SizedBox(height: 8),
                   _SourceCard(
                     icon: Icons.photo_library_outlined,
-                    title: 'From gallery',
-                    subtitle: 'Use one of your own pictures',
+                    title: l.fromGallery,
+                    subtitle: l.fromGallerySub,
                     onTap: () => _pick(ImageSource.gallery),
                   ),
                   const SizedBox(height: 12),
                   _SourceCard(
                     icon: Icons.photo_camera_outlined,
-                    title: 'Take a photo',
-                    subtitle: 'Snap something right now',
+                    title: l.takePhoto,
+                    subtitle: l.takePhotoSub,
                     onTap: () => _pick(ImageSource.camera),
                   ),
                 ],

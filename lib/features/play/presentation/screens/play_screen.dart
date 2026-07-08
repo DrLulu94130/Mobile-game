@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -33,11 +34,10 @@ class PlayScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => StateMessage(
           icon: Icons.error_outline,
-          title: 'Challenge not found',
-          subtitle: 'It may have been removed.',
+          title: AppLocalizations.of(context).challengeNotFound,
           action: FilledButton(
             onPressed: () => context.pop(),
-            child: const Text('Go back'),
+            child: Text(AppLocalizations.of(context).goBack),
           ),
         ),
         data: (challenge) => _PlayView(challenge: challenge),
@@ -232,7 +232,7 @@ class _PlayViewState extends ConsumerState<_PlayView> {
                     foregroundColor: Colors.white,
                   ),
                   icon: const Icon(Icons.flag_outlined),
-                  label: const Text('Give up & reveal'),
+                  label: Text(AppLocalizations.of(context).giveUpReveal),
                 ),
               ),
             ),

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/deeplink/deep_link_listener.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/settings/presentation/controllers/locale_controller.dart';
 import 'features/settings/presentation/controllers/theme_controller.dart';
 
 /// Root widget of the Inkognito application.
 ///
-/// Wires up theming (with dark-mode support), routing via GoRouter and the
-/// Riverpod-driven [ThemeMode] preference.
+/// Wires up theming (with dark-mode support), routing via GoRouter, the
+/// Riverpod-driven [ThemeMode]/[Locale] preferences and localisation.
 class InkognitoApp extends ConsumerWidget {
   const InkognitoApp({super.key});
 
@@ -16,14 +19,21 @@ class InkognitoApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeControllerProvider);
+    final locale = ref.watch(localeControllerProvider);
 
-    return MaterialApp.router(
-      title: 'Inkognito',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: themeMode,
-      routerConfig: router,
+    return DeepLinkListener(
+      router: router,
+      child: MaterialApp.router(
+        title: 'Inkognito',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: themeMode,
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: router,
+      ),
     );
   }
 }

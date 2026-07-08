@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -34,14 +35,16 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
       if (ok) {
         ref.invalidate(isPremiumProvider);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Welcome to Premium! 🎉')),
+          SnackBar(content: Text(AppLocalizations.of(context).welcomePremium)),
         );
         Navigator.of(context).pop();
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Purchase was cancelled')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).purchaseCancelled),
+          ),
         );
       }
     } finally {
@@ -51,10 +54,11 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final offerings = ref.watch(offeringsProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inkognito Premium'),
+        title: Text(l.premiumTitle),
         actions: [
           TextButton(
             onPressed: () async {
@@ -62,7 +66,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                   await ref.read(purchaseRepositoryProvider).restore();
               if (mounted && ok) ref.invalidate(isPremiumProvider);
             },
-            child: const Text('Restore'),
+            child: Text(l.restore),
           ),
         ],
       ),
@@ -75,21 +79,22 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
               gradient: AppColors.brandGradient,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Column(
+            child: Column(
               children: [
-                Icon(Icons.workspace_premium, color: AppColors.glow, size: 48),
-                SizedBox(height: 8),
+                const Icon(Icons.workspace_premium,
+                    color: AppColors.glow, size: 48),
+                const SizedBox(height: 8),
                 Text(
-                  'Unlock everything',
-                  style: TextStyle(
+                  l.unlockEverything,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 Text(
-                  'Go ad-free and get every creature pack.',
-                  style: TextStyle(color: Colors.white70),
+                  l.unlockSub,
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ],
             ),
@@ -147,7 +152,7 @@ class _FallbackCta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GradientButton(
-      label: 'Go Premium',
+      label: AppLocalizations.of(context).goPremium,
       loading: busy,
       onPressed: () {
         ScaffoldMessenger.of(context).showSnackBar(

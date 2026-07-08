@@ -2,10 +2,12 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image/image.dart' as img;
 
+import '../../../../core/ads/ad_service.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -130,6 +132,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   }
 
   void _showLimitReached() {
+    final l = AppLocalizations.of(context);
     showModalBottomSheet<void>(
       context: context,
       builder: (_) => Padding(
@@ -140,18 +143,18 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             const Icon(Icons.lock_outline, size: 40, color: AppColors.ink),
             const SizedBox(height: 12),
             Text(
-              'Inkling limit reached',
+              l.inklingLimitTitle,
               style: Theme.of(context)
                   .textTheme
                   .titleLarge
                   ?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Free challenges allow up to '
-              '${AppConstants.freeMaxInklingsPerChallenge} Inklings. '
-              'Go Premium to hide up to '
-              '${AppConstants.premiumMaxInklingsPerChallenge}.',
+            Text(
+              l.inklingLimitBody(
+                AppConstants.freeMaxInklingsPerChallenge,
+                AppConstants.premiumMaxInklingsPerChallenge,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -160,7 +163,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                 Navigator.pop(context);
                 context.push(Routes.premium);
               },
-              child: const Text('See Premium'),
+              child: Text(l.seePremium),
             ),
           ],
         ),
@@ -172,13 +175,14 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     final state = ref.read(editorControllerProvider);
     if (!state.hasInklings) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add at least one Inkling first')),
+        SnackBar(content: Text(AppLocalizations.of(context).addInklingFirst)),
       );
       return;
     }
     final title = await _askTitle();
     if (title == null || !mounted) return;
 
+    final l = AppLocalizations.of(context);
     final premium = ref.read(isPremiumProvider).valueOrNull ?? false;
 
     showDialog<void>(
@@ -198,9 +202,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     if (!mounted) return;
     Navigator.pop(context); // dismiss loader
 
-    result.when(
-      success: (output) {
-        showModalBottomSheet<void>(
+    await result.when(
+      success: (output) async {
+        await showModalBottomSheet<void>(
           context: context,
           isScrollControlled: true,
           builder: (_) => ShareSheet(
@@ -208,10 +212,16 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             camouflagedBytes: output.camouflagedBytes,
           ),
         );
+        // Free tier: an interstitial after publishing (frequency-capped).
+        if (!premium &&
+            ref.read(adServiceProvider).shouldShowAfterAction()) {
+          await ref.read(adServiceProvider).maybeShowInterstitial();
+        }
       },
-      failure: (f) {
+      failure: (f) async {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Publish failed: ${f.message}')),
+          SnackBar(content: Text(l.publishFailed(f.message))),
         );
       },
     );
@@ -219,24 +229,25 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   Future<String?> _askTitle() {
     final controller = TextEditingController();
+    final l = AppLocalizations.of(context);
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Name your challenge'),
+        title: Text(l.nameYourChallenge),
         content: TextField(
           controller: controller,
           autofocus: true,
           maxLength: 40,
-          decoration: const InputDecoration(hintText: 'e.g. Spot the six!'),
+          decoration: InputDecoration(hintText: l.challengeHint),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Publish'),
+            child: Text(l.publish),
           ),
         ],
       ),
@@ -257,7 +268,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           icon: const Icon(Icons.close),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Camouflage'),
+        title: Text(AppLocalizations.of(context).toolBrush),
         actions: [
           IconButton(
             icon: const Icon(Icons.undo),
@@ -275,7 +286,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                 backgroundColor: AppColors.splash,
                 minimumSize: const Size(64, 40),
               ),
-              child: const Text('Done'),
+              child: Text(AppLocalizations.of(context).done),
             ),
           ),
         ],

@@ -37,6 +37,11 @@ class EditorController extends StateNotifier<EditorState> {
   void setZoom(double zoom) =>
       state = state.copyWith(zoom: zoom.clamp(1.0, 4.0));
 
+  /// Toggles pan/pinch-to-zoom inspection mode. Clears the active tool's
+  /// interaction so gestures don't fight the [InteractiveViewer].
+  void toggleZoom() =>
+      state = state.copyWith(zoomEnabled: !state.zoomEnabled);
+
   void select(String? id) {
     if (id == null) {
       state = state.copyWith(clearSelection: true);

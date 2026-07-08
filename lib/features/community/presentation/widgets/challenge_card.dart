@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/routes.dart';
@@ -122,7 +123,7 @@ class _AuthorRow extends StatelessWidget {
           ),
           const Spacer(),
           Text(
-            '${challenge.inklingCount} hidden',
+            AppLocalizations.of(context).hidden(challenge.inklingCount),
             style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
           ),
         ],

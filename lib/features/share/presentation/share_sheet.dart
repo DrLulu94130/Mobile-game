@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,13 +40,14 @@ class ShareSheet extends ConsumerWidget {
         );
     if (context.mounted && t == ShareTarget.copyLink) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Link copied to clipboard')),
+        SnackBar(content: Text(AppLocalizations.of(context).linkCopied)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -62,14 +64,14 @@ class ShareSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Challenge published! 🎉',
+              l.challengePublished,
               style: Theme.of(context)
                   .textTheme
                   .titleLarge
                   ?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
-            const Text('Share the puzzle — the answer stays hidden.'),
+            Text(l.shareSubtitle),
             const SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
@@ -101,7 +103,7 @@ class ShareSheet extends ConsumerWidget {
                 Navigator.pop(context);
                 context.go(Routes.challengePath(challenge.id));
               },
-              child: const Text('View challenge'),
+              child: Text(l.viewChallenge),
             ),
           ],
         ),

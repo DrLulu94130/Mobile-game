@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,21 +46,22 @@ class FeedScreen extends ConsumerWidget {
               error: (e, _) => SliverFillRemaining(
                 child: StateMessage(
                   icon: Icons.wifi_off,
-                  title: 'Could not load the feed',
+                  title: AppLocalizations.of(context).feedEmptyTitle,
                   subtitle: '$e',
                 ),
               ),
               data: (challenges) {
                 if (challenges.isEmpty) {
+                  final l = AppLocalizations.of(context);
                   return SliverFillRemaining(
                     child: StateMessage(
                       icon: Icons.explore_off_outlined,
-                      title: 'No challenges yet',
-                      subtitle: 'Be the first to hide some Inklings!',
+                      title: l.feedEmptyTitle,
+                      subtitle: l.feedEmptyBody,
                       action: FilledButton.icon(
                         onPressed: () => context.push(Routes.create),
                         icon: const Icon(Icons.add),
-                        label: const Text('Create one'),
+                        label: Text(l.createOne),
                       ),
                     ),
                   );
@@ -86,7 +88,7 @@ class _PremiumChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return ActionChip(
       avatar: const Icon(Icons.workspace_premium, size: 18, color: AppColors.glow),
-      label: const Text('Premium'),
+      label: Text(AppLocalizations.of(context).premium),
       onPressed: () => context.push(Routes.premium),
     );
   }
@@ -105,11 +107,12 @@ class _TrendingStrip extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               child: Text(
-                '🔥 Trending now',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                AppLocalizations.of(context).feedTrending,
+                style:
+                    const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
               ),
             ),
             SizedBox(

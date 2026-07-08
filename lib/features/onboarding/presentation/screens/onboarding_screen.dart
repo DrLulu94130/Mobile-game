@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -21,23 +22,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _page = PageController();
   bool _showAuth = false;
 
-  static const _slides = [
-    _Slide(
-      species: InklingSpecies.classic,
-      title: 'Hide Inklings in your photos',
-      body: 'Drop original little creatures anywhere in your own pictures.',
-    ),
-    _Slide(
-      species: InklingSpecies.ghost,
-      title: 'Camouflage them by hand',
-      body: 'Paint the colours of the scene onto each Inkling to make it vanish.',
-    ),
-    _Slide(
-      species: InklingSpecies.dragon,
-      title: 'Challenge your friends',
-      body: 'Share the puzzle. They tap to find what you hid — against the clock.',
-    ),
-  ];
+  List<_Slide> _slidesFor(AppLocalizations l) => [
+        _Slide(
+          species: InklingSpecies.classic,
+          title: l.onboardTitle1,
+          body: l.onboardBody1,
+        ),
+        _Slide(
+          species: InklingSpecies.ghost,
+          title: l.onboardTitle2,
+          body: l.onboardBody2,
+        ),
+        _Slide(
+          species: InklingSpecies.dragon,
+          title: l.onboardTitle3,
+          body: l.onboardBody3,
+        ),
+      ];
 
   @override
   void initState() {
@@ -53,6 +54,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final slides = _slidesFor(l);
     return Scaffold(
       body: SafeArea(
         child: _showAuth
@@ -62,15 +65,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   Expanded(
                     child: PageView.builder(
                       controller: _page,
-                      itemCount: _slides.length,
-                      itemBuilder: (_, i) => _slides[i],
+                      itemCount: slides.length,
+                      itemBuilder: (_, i) => slides[i],
                     ),
                   ),
-                  _Dots(controller: _page, count: _slides.length),
+                  _Dots(controller: _page, count: slides.length),
                   Padding(
                     padding: const EdgeInsets.all(24),
                     child: GradientButton(
-                      label: 'Get started',
+                      label: l.getStarted,
                       icon: Icons.arrow_forward,
                       onPressed: () => setState(() => _showAuth = true),
                     ),
@@ -206,6 +209,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final state = ref.watch(authControllerProvider);
     final loading = state.isLoading;
 
@@ -232,7 +236,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
               ),
             ),
             Text(
-              _register ? 'Create your account' : 'Welcome back',
+              _register ? l.createAccount : l.welcomeBack,
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall
@@ -245,12 +249,12 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
                 child: TextFormField(
                   controller: _name,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    hintText: 'Display name',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    hintText: l.displayName,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   validator: (v) => (v == null || v.trim().length < 2)
-                      ? 'Enter a name'
+                      ? l.enterName
                       : null,
                 ),
               ),
@@ -258,27 +262,27 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-                prefixIcon: Icon(Icons.mail_outline),
+              decoration: InputDecoration(
+                hintText: l.email,
+                prefixIcon: const Icon(Icons.mail_outline),
               ),
               validator: (v) =>
-                  (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                  (v == null || !v.contains('@')) ? l.enterValidEmail : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _password,
               obscureText: true,
-              decoration: const InputDecoration(
-                hintText: 'Password',
-                prefixIcon: Icon(Icons.lock_outline),
+              decoration: InputDecoration(
+                hintText: l.password,
+                prefixIcon: const Icon(Icons.lock_outline),
               ),
               validator: (v) =>
-                  (v == null || v.length < 6) ? 'Min 6 characters' : null,
+                  (v == null || v.length < 6) ? l.minChars : null,
             ),
             const SizedBox(height: 24),
             GradientButton(
-              label: _register ? 'Sign up' : 'Sign in',
+              label: _register ? l.signUp : l.signIn,
               loading: loading,
               onPressed: _submit,
             ),
@@ -286,19 +290,17 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
             TextButton(
               onPressed: () => setState(() => _register = !_register),
               child: Text(
-                _register
-                    ? 'Already have an account? Sign in'
-                    : "New here? Create an account",
+                _register ? l.haveAccountSignIn : l.newHereCreate,
               ),
             ),
-            const Row(
+            Row(
               children: [
-                Expanded(child: Divider()),
+                const Expanded(child: Divider()),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('or'),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(l.orLabel),
                 ),
-                Expanded(child: Divider()),
+                const Expanded(child: Divider()),
               ],
             ),
             const SizedBox(height: 12),
@@ -309,7 +311,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
                       .read(authControllerProvider.notifier)
                       .signInAnonymously(),
               icon: const Icon(Icons.play_arrow),
-              label: const Text('Continue as guest'),
+              label: Text(l.continueAsGuest),
             ),
           ],
         ),

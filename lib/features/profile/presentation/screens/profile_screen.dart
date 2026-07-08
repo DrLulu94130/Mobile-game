@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,6 +46,7 @@ class _ProfileView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final progress = ProgressionService.levelProgress(user.xp, user.level);
     final challenges = ref.watch(challengesByAuthorProvider(user.uid));
 
@@ -52,8 +54,8 @@ class _ProfileView extends ConsumerWidget {
       slivers: [
         SliverAppBar(
           pinned: true,
-          title: const Text('Profile',
-              style: TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(l.navProfile,
+              style: const TextStyle(fontWeight: FontWeight.w900)),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings_outlined),
@@ -119,17 +121,17 @@ class _ProfileView extends ConsumerWidget {
                   children: [
                     StatPill(
                       value: '${user.challengesCreated}',
-                      label: 'Created',
+                      label: l.created,
                       icon: Icons.brush,
                     ),
                     StatPill(
                       value: '${user.challengesSolved}',
-                      label: 'Solved',
+                      label: l.solved,
                       icon: Icons.visibility,
                     ),
                     StatPill(
                       value: '${user.streakDays}',
-                      label: 'Day streak',
+                      label: l.dayStreak,
                       icon: Icons.local_fire_department,
                     ),
                   ],
@@ -139,12 +141,13 @@ class _ProfileView extends ConsumerWidget {
           ),
         ),
         SliverToBoxAdapter(child: _BadgeStrip(user: user)),
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
             child: Text(
-              'Your challenges',
-              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+              l.yourChallenges,
+              style:
+                  const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
             ),
           ),
         ),
@@ -157,10 +160,10 @@ class _ProfileView extends ConsumerWidget {
           ),
           error: (e, _) => SliverToBoxAdapter(child: Text('$e')),
           data: (list) => list.isEmpty
-              ? const SliverToBoxAdapter(
+              ? SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text('No challenges created yet.'),
+                    padding: const EdgeInsets.all(24),
+                    child: Text(l.noChallengesYet),
                   ),
                 )
               : SliverPadding(
@@ -201,6 +204,7 @@ class _LevelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -214,7 +218,7 @@ class _LevelCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Level ${user.level}',
+                l.level(user.level),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
@@ -222,7 +226,7 @@ class _LevelCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '${user.xp} XP',
+                l.xpValue(user.xp),
                 style: const TextStyle(color: Colors.white70),
               ),
             ],
@@ -239,7 +243,7 @@ class _LevelCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            '${((1 - progress) * 100).round()}% to level ${user.level + 1}',
+            l.toNextLevel(((1 - progress) * 100).round(), user.level + 1),
             style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
         ],
@@ -264,13 +268,14 @@ class _BadgeStrip extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Badges',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                Text(
+                  AppLocalizations.of(context).badges,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800, fontSize: 16),
                 ),
                 TextButton(
                   onPressed: () => context.push(Routes.badges),
-                  child: const Text('See all'),
+                  child: Text(AppLocalizations.of(context).seeAll),
                 ),
               ],
             ),

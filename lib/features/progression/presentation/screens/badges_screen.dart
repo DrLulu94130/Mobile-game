@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -14,7 +15,7 @@ class BadgesScreen extends ConsumerWidget {
     final earned =
         ref.watch(currentUserProvider).valueOrNull?.badgeIds ?? const [];
     return Scaffold(
-      appBar: AppBar(title: const Text('Achievements')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).achievements)),
       body: GridView.count(
         crossAxisCount: 2,
         padding: const EdgeInsets.all(16),

@@ -39,6 +39,13 @@ class _EditorCanvasState extends State<EditorCanvas> {
   Offset? _gestureStartFocal;
 
   Size _canvas = Size.zero;
+  final TransformationController _viewer = TransformationController();
+
+  @override
+  void dispose() {
+    _viewer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +53,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
       builder: (context, constraints) {
         _canvas = Size(constraints.maxWidth, constraints.maxHeight);
         final tool = widget.state.tool;
+        final zoom = widget.state.zoomEnabled;
 
         Widget stack = Stack(
           fit: StackFit.expand,
@@ -55,34 +63,50 @@ class _EditorCanvasState extends State<EditorCanvas> {
           ],
         );
 
-        // Choose the gesture handler appropriate to the active tool.
-        switch (tool) {
-          case EditorTool.move:
-            stack = GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapUp: _selectAt,
-              onScaleStart: _onTransformStart,
-              onScaleUpdate: _onTransformUpdate,
-              onScaleEnd: (_) => widget.controller.endTransform(),
-              child: stack,
-            );
-          case EditorTool.brush:
-          case EditorTool.eraser:
-            stack = GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onPanStart: _onDrawStart,
-              onPanUpdate: _onDrawUpdate,
-              onPanEnd: (_) => widget.controller.endStroke(),
-              child: stack,
-            );
-          case EditorTool.eyedropper:
-            stack = GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapUp: (d) => widget.onSampleColor(_normalise(d.localPosition)),
-              child: stack,
-            );
+        // In zoom mode the InteractiveViewer owns all gestures; otherwise the
+        // tool-specific handler does. The zoom transform persists after
+        // leaving zoom mode, so users can pan in, then draw with precision —
+        // gesture coordinates are mapped back into child space automatically.
+        if (!zoom) {
+          switch (tool) {
+            case EditorTool.move:
+              stack = GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTapUp: _selectAt,
+                onScaleStart: _onTransformStart,
+                onScaleUpdate: _onTransformUpdate,
+                onScaleEnd: (_) => widget.controller.endTransform(),
+                child: stack,
+              );
+            case EditorTool.brush:
+            case EditorTool.eraser:
+              stack = GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onPanStart: _onDrawStart,
+                onPanUpdate: _onDrawUpdate,
+                onPanEnd: (_) => widget.controller.endStroke(),
+                child: stack,
+              );
+            case EditorTool.eyedropper:
+              stack = GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTapUp: (d) =>
+                    widget.onSampleColor(_normalise(d.localPosition)),
+                child: stack,
+              );
+          }
         }
-        return ClipRect(child: stack);
+
+        return ClipRect(
+          child: InteractiveViewer(
+            transformationController: _viewer,
+            panEnabled: zoom,
+            scaleEnabled: zoom,
+            minScale: 1,
+            maxScale: 5,
+            child: stack,
+          ),
+        );
       },
     );
   }

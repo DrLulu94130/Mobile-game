@@ -1,69 +1,99 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/routes.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
+import '../controllers/locale_controller.dart';
 import '../controllers/theme_controller.dart';
 
-/// App settings: theme, packs, premium and account actions.
+/// App settings: theme, language, packs, premium and account actions.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final themeMode = ref.watch(themeControllerProvider);
+    final locale = ref.watch(localeControllerProvider);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l.settings)),
       body: ListView(
         children: [
-          const _SectionHeader('Appearance'),
+          _SectionHeader(l.appearance),
           RadioListTile<ThemeMode>(
             value: ThemeMode.system,
             groupValue: themeMode,
             onChanged: (m) =>
                 ref.read(themeControllerProvider.notifier).set(m!),
-            title: const Text('Match system'),
+            title: Text(l.matchSystem),
           ),
           RadioListTile<ThemeMode>(
             value: ThemeMode.light,
             groupValue: themeMode,
             onChanged: (m) =>
                 ref.read(themeControllerProvider.notifier).set(m!),
-            title: const Text('Light'),
+            title: Text(l.light),
           ),
           RadioListTile<ThemeMode>(
             value: ThemeMode.dark,
             groupValue: themeMode,
             onChanged: (m) =>
                 ref.read(themeControllerProvider.notifier).set(m!),
-            title: const Text('Dark'),
+            title: Text(l.dark),
           ),
           const Divider(),
-          const _SectionHeader('Content'),
+          _SectionHeader(l.language),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text(l.language),
+            trailing: DropdownButton<Locale?>(
+              value: locale,
+              underline: const SizedBox.shrink(),
+              onChanged: (value) =>
+                  ref.read(localeControllerProvider.notifier).set(value),
+              items: [
+                DropdownMenuItem(value: null, child: Text(l.systemDefault)),
+                const DropdownMenuItem(
+                  value: Locale('en'),
+                  child: Text('English'),
+                ),
+                const DropdownMenuItem(
+                  value: Locale('fr'),
+                  child: Text('Français'),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          _SectionHeader(l.content),
           ListTile(
             leading: const Icon(Icons.pets_outlined),
-            title: const Text('Character packs'),
+            title: Text(l.characterPacks),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(Routes.packs),
           ),
           ListTile(
             leading: const Icon(Icons.workspace_premium_outlined),
-            title: const Text('Inkognito Premium'),
+            title: Text(l.premiumTitle),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(Routes.premium),
           ),
           ListTile(
             leading: const Icon(Icons.emoji_events_outlined),
-            title: const Text('Achievements'),
+            title: Text(l.achievements),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push(Routes.badges),
           ),
           const Divider(),
-          const _SectionHeader('Account'),
+          _SectionHeader(l.account),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.redAccent),
-            title: const Text('Sign out'),
+            title: Text(l.signOut),
             onTap: () async {
               await ref.read(authControllerProvider.notifier).signOut();
               if (context.mounted) context.go(Routes.signIn);

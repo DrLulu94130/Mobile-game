@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +17,7 @@ class PacksScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final premium = ref.watch(isPremiumProvider).valueOrNull ?? false;
     return Scaffold(
-      appBar: AppBar(title: const Text('Character packs')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).characterPacks)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

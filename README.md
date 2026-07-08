@@ -27,7 +27,10 @@ the clock.
 | **Community** | Feed, likes, comments, trending, daily challenges, popular creators |
 | **Progression** | XP, levels, achievements, badges, daily streaks |
 | **Packs** | Six original creature families; premium packs gated |
-| **Monetisation** | Free with ads; Premium (ad-free, all packs, HD export, unlimited challenges, more Inklings) via RevenueCat |
+| **Monetisation** | Free with **AdMob** ads (banner + frequency-capped interstitial, auto-hidden for Premium); Premium (ad-free, all packs, HD export, unlimited challenges, more Inklings) via RevenueCat |
+| **Deep links** | Shared links (`inkognito://challenge/<id>` and `https://<host>/c/<id>`) open the exact challenge in-app via `app_links`; store fallback for non-users |
+| **Editor zoom** | Pinch/pan inspection mode (`InteractiveViewer`) — zoom in, then draw with precision |
+| **Localisation** | Full English + French (`gen-l10n`), with an in-app language switch |
 | **Polish** | Clean Architecture, Riverpod, GoRouter, responsive, fluid animations, full Dark Mode |
 
 ## 🏗 Architecture
@@ -75,7 +78,7 @@ RevenueCat · Crashlytics · Analytics.
 ## 🚀 Getting started
 
 ```bash
-# 1. Install dependencies
+# 1. Install dependencies (also runs gen-l10n for EN/FR localisation)
 flutter pub get
 
 # 2. Generate the native platform folders (android/ ios/ …)

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -22,12 +23,12 @@ class ChallengeDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(challengeByIdProvider(challengeId));
     return Scaffold(
-      appBar: AppBar(title: const Text('Challenge')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).newChallenge)),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const StateMessage(
+        error: (_, __) => StateMessage(
           icon: Icons.error_outline,
-          title: 'Challenge not found',
+          title: AppLocalizations.of(context).challengeNotFound,
         ),
         data: (challenge) => _DetailView(challenge: challenge),
       ),
@@ -41,6 +42,7 @@ class _DetailView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final uid = ref.watch(authRepositoryProvider).currentUser?.uid;
     final comments = ref.watch(commentsProvider(challenge.id));
 
@@ -70,9 +72,9 @@ class _DetailView extends ConsumerWidget {
                       onPressed: () =>
                           context.push(Routes.playPath(challenge.id)),
                       icon: const Icon(Icons.play_arrow, color: Colors.white),
-                      label: const Text(
-                        'Play',
-                        style: TextStyle(color: Colors.white),
+                      label: Text(
+                        l.play,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
@@ -92,9 +94,9 @@ class _DetailView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'by ${challenge.authorName} · '
-                      '${challenge.inklingCount} hidden · '
-                      'best ${_best(challenge.bestTimeMs)}',
+                      '${challenge.authorName} · '
+                      '${l.hidden(challenge.inklingCount)} · '
+                      '${_best(challenge.bestTimeMs)}',
                       style: const TextStyle(color: AppColors.textMuted),
                     ),
                     const SizedBox(height: 12),
@@ -108,15 +110,15 @@ class _DetailView extends ConsumerWidget {
                         const SizedBox(width: 4),
                         Text('${challenge.commentCount}'),
                         const Spacer(),
-                        Text('${challenge.playCount} plays',
+                        Text(l.plays(challenge.playCount),
                             style: const TextStyle(color: AppColors.textMuted)),
                       ],
                     ),
                     const Divider(height: 32),
-                    const Text(
-                      'Comments',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                    Text(
+                      l.comments,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w800, fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     comments.when(
@@ -127,9 +129,10 @@ class _DetailView extends ConsumerWidget {
                       )),
                       error: (e, _) => Text('$e'),
                       data: (list) => list.isEmpty
-                          ? const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: Text('Be the first to comment!'),
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16),
+                              child: Text(l.beFirstComment),
                             )
                           : Column(
                               children: [
@@ -176,7 +179,7 @@ class _LikeButton extends ConsumerWidget {
             color: liked ? AppColors.coral : AppColors.textMuted,
           ),
           const SizedBox(width: 4),
-          const Text('Like'),
+          Text(AppLocalizations.of(context).like),
         ],
       ),
     );
@@ -267,10 +270,10 @@ class _CommentComposerState extends ConsumerState<_CommentComposer> {
                 controller: _controller,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _send(),
-                decoration: const InputDecoration(
-                  hintText: 'Add a comment…',
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context).addComment,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 ),
               ),
             ),

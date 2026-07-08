@@ -20,6 +20,7 @@ class EditorState {
     this.brushColor = const Color(0xFF6C5CE7),
     this.brushSize = 0.08,
     this.zoom = 1.0,
+    this.zoomEnabled = false,
     this.canUndo = false,
     this.canRedo = false,
     this.isExporting = false,
@@ -34,6 +35,11 @@ class EditorState {
   final double brushSize;
 
   final double zoom;
+
+  /// When true, the canvas is in pan/pinch-to-zoom mode (editing gestures are
+  /// suspended so the user can inspect fine detail).
+  final bool zoomEnabled;
+
   final bool canUndo;
   final bool canRedo;
   final bool isExporting;
@@ -55,6 +61,7 @@ class EditorState {
     Color? brushColor,
     double? brushSize,
     double? zoom,
+    bool? zoomEnabled,
     bool? canUndo,
     bool? canRedo,
     bool? isExporting,
@@ -66,6 +73,7 @@ class EditorState {
       brushColor: brushColor ?? this.brushColor,
       brushSize: brushSize ?? this.brushSize,
       zoom: zoom ?? this.zoom,
+      zoomEnabled: zoomEnabled ?? this.zoomEnabled,
       canUndo: canUndo ?? this.canUndo,
       canRedo: canRedo ?? this.canRedo,
       isExporting: isExporting ?? this.isExporting,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -29,6 +30,7 @@ class EditorToolbars extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasSelection = state.selected != null;
+    final l = AppLocalizations.of(context);
     return Container(
       color: const Color(0xFF141222),
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 20),
@@ -51,13 +53,13 @@ class EditorToolbars extends StatelessWidget {
               children: [
                 _ActionChip(
                   icon: Icons.copy,
-                  label: 'Duplicate',
+                  label: l.duplicate,
                   onTap: controller.duplicateSelected,
                 ),
                 const SizedBox(width: 8),
                 _ActionChip(
                   icon: Icons.delete_outline,
-                  label: 'Delete',
+                  label: l.delete,
                   onTap: controller.deleteSelected,
                   danger: true,
                 ),
@@ -70,34 +72,41 @@ class EditorToolbars extends StatelessWidget {
             children: [
               _ToolButton(
                 icon: Icons.open_with,
-                label: 'Move',
-                active: state.tool == EditorTool.move,
+                label: l.toolMove,
+                active: state.tool == EditorTool.move && !state.zoomEnabled,
                 onTap: () => controller.setTool(EditorTool.move),
               ),
               _ToolButton(
                 icon: Icons.brush,
-                label: 'Brush',
-                active: state.tool == EditorTool.brush,
+                label: l.toolBrush,
+                active: state.tool == EditorTool.brush && !state.zoomEnabled,
                 enabled: hasSelection,
                 onTap: () => controller.setTool(EditorTool.brush),
               ),
               _ToolButton(
                 icon: Icons.colorize,
-                label: 'Pipette',
-                active: state.tool == EditorTool.eyedropper,
+                label: l.toolPipette,
+                active:
+                    state.tool == EditorTool.eyedropper && !state.zoomEnabled,
                 enabled: hasSelection,
                 onTap: onSampleFromCanvas,
               ),
               _ToolButton(
                 icon: Icons.auto_fix_high,
-                label: 'Erase',
-                active: state.tool == EditorTool.eraser,
+                label: l.toolErase,
+                active: state.tool == EditorTool.eraser && !state.zoomEnabled,
                 enabled: hasSelection,
                 onTap: () => controller.setTool(EditorTool.eraser),
               ),
               _ToolButton(
+                icon: state.zoomEnabled ? Icons.zoom_in : Icons.zoom_in_outlined,
+                label: l.toolZoom,
+                active: state.zoomEnabled,
+                onTap: controller.toggleZoom,
+              ),
+              _ToolButton(
                 icon: Icons.add_reaction_outlined,
-                label: 'Add',
+                label: l.toolAdd,
                 active: false,
                 onTap: () => _openPackPicker(context),
               ),
@@ -349,7 +358,7 @@ class _PackPicker extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Pick an Inkling',
+              AppLocalizations.of(context).pickAnInkling,
               style: Theme.of(context)
                   .textTheme
                   .titleLarge
