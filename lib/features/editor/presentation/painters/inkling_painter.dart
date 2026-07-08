@@ -204,7 +204,11 @@ class InklingPainter extends CustomPainter {
       path.moveTo(first.dx, first.dy);
       if (stroke.points.length == 1) {
         // A single tap becomes a dot.
-        canvas.drawCircle(first, paint.strokeWidth / 2, paint..style = PaintingStyle.fill);
+        canvas.drawCircle(
+          first,
+          paint.strokeWidth / 2,
+          paint..style = PaintingStyle.fill,
+        );
         paint.style = PaintingStyle.stroke;
         continue;
       }
@@ -232,10 +236,13 @@ class InklingPainter extends CustomPainter {
           ..color = const Color(0xFF2A2740),
       );
       // Pupil, offset slightly for a curious gaze plus wobble life.
-      final pupil = center +
-          Offset(r * 0.18, r * 0.20) +
-          Offset(0, wobble * r * 0.12);
-      canvas.drawCircle(pupil, r * 0.5, Paint()..color = const Color(0xFF15132A));
+      final pupil =
+          center + Offset(r * 0.18, r * 0.20) + Offset(0, wobble * r * 0.12);
+      canvas.drawCircle(
+        pupil,
+        r * 0.5,
+        Paint()..color = const Color(0xFF15132A),
+      );
       // Catch-light.
       canvas.drawCircle(
         pupil - Offset(r * 0.18, r * 0.18),

@@ -103,8 +103,10 @@ class _SourceCard extends StatelessWidget {
           backgroundColor: AppColors.ink.withValues(alpha: 0.14),
           child: Icon(icon, color: AppColors.ink),
         ),
-        title: Text(title,
-            style: const TextStyle(fontWeight: FontWeight.w700)),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.chevron_right),
         onTap: onTap,

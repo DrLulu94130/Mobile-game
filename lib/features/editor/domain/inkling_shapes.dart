@@ -21,32 +21,32 @@ abstract class InklingShapes {
   }
 
   /// Eye centres + radius (all normalised 0..1) for [species].
-  static List<_Eye> eyes(InklingSpecies species) {
+  static List<InklingEye> eyes(InklingSpecies species) {
     return switch (species) {
       InklingSpecies.classic => const [
-          _Eye(Offset(0.36, 0.42), 0.10),
-          _Eye(Offset(0.64, 0.42), 0.10),
+          InklingEye(Offset(0.36, 0.42), 0.10),
+          InklingEye(Offset(0.64, 0.42), 0.10),
         ],
       InklingSpecies.ghost => const [
-          _Eye(Offset(0.37, 0.40), 0.09),
-          _Eye(Offset(0.63, 0.40), 0.09),
+          InklingEye(Offset(0.37, 0.40), 0.09),
+          InklingEye(Offset(0.63, 0.40), 0.09),
         ],
       InklingSpecies.robot => const [
-          _Eye(Offset(0.35, 0.45), 0.11),
-          _Eye(Offset(0.65, 0.45), 0.11),
+          InklingEye(Offset(0.35, 0.45), 0.11),
+          InklingEye(Offset(0.65, 0.45), 0.11),
         ],
       InklingSpecies.dragon => const [
-          _Eye(Offset(0.38, 0.38), 0.08),
-          _Eye(Offset(0.62, 0.38), 0.08),
+          InklingEye(Offset(0.38, 0.38), 0.08),
+          InklingEye(Offset(0.62, 0.38), 0.08),
         ],
-      InklingSpecies.alien => const [_Eye(Offset(0.50, 0.44), 0.16)],
+      InklingSpecies.alien => const [InklingEye(Offset(0.50, 0.44), 0.16)],
       InklingSpecies.animal => const [
-          _Eye(Offset(0.38, 0.46), 0.10),
-          _Eye(Offset(0.62, 0.46), 0.10),
+          InklingEye(Offset(0.38, 0.46), 0.10),
+          InklingEye(Offset(0.62, 0.46), 0.10),
         ],
       InklingSpecies.monster => const [
-          _Eye(Offset(0.34, 0.40), 0.12),
-          _Eye(Offset(0.60, 0.36), 0.09),
+          InklingEye(Offset(0.34, 0.40), 0.12),
+          InklingEye(Offset(0.60, 0.36), 0.09),
         ],
     };
   }
@@ -66,8 +66,7 @@ abstract class InklingShapes {
   // --- Unit shape definitions (all within 0..1) ---
 
   static Path _blob() {
-    return Path()
-      ..addOval(const Rect.fromLTWH(0.08, 0.06, 0.84, 0.88));
+    return Path()..addOval(const Rect.fromLTWH(0.08, 0.06, 0.84, 0.88));
   }
 
   static Path _ghost() {
@@ -101,31 +100,34 @@ abstract class InklingShapes {
   }
 
   static Path _dragon() {
-    final p = Path()
-      ..addOval(const Rect.fromLTWH(0.14, 0.16, 0.72, 0.78));
+    final p = Path()..addOval(const Rect.fromLTWH(0.14, 0.16, 0.72, 0.78));
     // Ears / horns.
-    p.addPolygon(const [
-      Offset(0.22, 0.20),
-      Offset(0.10, 0.02),
-      Offset(0.36, 0.14),
-    ], true);
-    p.addPolygon(const [
-      Offset(0.78, 0.20),
-      Offset(0.90, 0.02),
-      Offset(0.64, 0.14),
-    ], true);
+    p.addPolygon(
+      const [
+        Offset(0.22, 0.20),
+        Offset(0.10, 0.02),
+        Offset(0.36, 0.14),
+      ],
+      true,
+    );
+    p.addPolygon(
+      const [
+        Offset(0.78, 0.20),
+        Offset(0.90, 0.02),
+        Offset(0.64, 0.14),
+      ],
+      true,
+    );
     return p;
   }
 
   static Path _alien() {
     // Tall rounded head.
-    return Path()
-      ..addOval(const Rect.fromLTWH(0.18, 0.04, 0.64, 0.92));
+    return Path()..addOval(const Rect.fromLTWH(0.18, 0.04, 0.64, 0.92));
   }
 
   static Path _animal() {
-    final p = Path()
-      ..addOval(const Rect.fromLTWH(0.12, 0.20, 0.76, 0.74));
+    final p = Path()..addOval(const Rect.fromLTWH(0.12, 0.20, 0.76, 0.74));
     // Round ears.
     p.addOval(const Rect.fromLTWH(0.14, 0.06, 0.24, 0.24));
     p.addOval(const Rect.fromLTWH(0.62, 0.06, 0.24, 0.24));
@@ -143,24 +145,25 @@ abstract class InklingShapes {
     // Small spikes on top.
     for (var i = 0; i < 3; i++) {
       final x = 0.32 + i * 0.18;
-      p.addPolygon([
-        Offset(x, 0.10),
-        Offset(x + 0.05, -0.02),
-        Offset(x + 0.10, 0.10),
-      ], true);
+      p.addPolygon(
+        [
+          Offset(x, 0.10),
+          Offset(x + 0.05, -0.02),
+          Offset(x + 0.10, 0.10),
+        ],
+        true,
+      );
     }
     return p;
   }
 }
 
-class _Eye {
-  const _Eye(this.center, this.radius);
+/// Eye descriptor consumed by the painters.
+class InklingEye {
+  const InklingEye(this.center, this.radius);
   final Offset center;
   final double radius;
 }
-
-/// Public re-export so painters can consume eye descriptors.
-typedef InklingEye = _Eye;
 
 extension InklingEyeAccess on InklingSpecies {
   /// Convenience helper for a subtle idle "wobble" phase used in animations.

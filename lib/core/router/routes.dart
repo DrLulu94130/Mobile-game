@@ -9,6 +9,7 @@ abstract class Routes {
 
   // Secondary screens
   static const String feed = '/feed';
+  static const String discover = '/discover';
   static const String daily = '/daily';
   static const String leaderboard = '/leaderboard';
   static const String profile = '/profile';

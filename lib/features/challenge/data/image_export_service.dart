@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -72,8 +71,7 @@ class ImageExportService {
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(outW, outH);
-    final byteData =
-        await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
     picture.dispose();
     image.dispose();
 

@@ -56,9 +56,8 @@ class Attempt {
         for (var i = 0; i + 1 < flat.length; i += 2)
           Offset(flat[i].toDouble(), flat[i + 1].toDouble()),
       ],
-      createdAt:
-          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.now(),
+      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 }

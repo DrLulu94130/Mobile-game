@@ -313,9 +313,8 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
                     hintText: l.displayName,
                     prefixIcon: const Icon(Icons.person_outline),
                   ),
-                  validator: (v) => (v == null || v.trim().length < 2)
-                      ? l.enterName
-                      : null,
+                  validator: (v) =>
+                      (v == null || v.trim().length < 2) ? l.enterName : null,
                 ),
               ),
             TextFormField(
@@ -337,8 +336,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
                 hintText: l.password,
                 prefixIcon: const Icon(Icons.lock_outline),
               ),
-              validator: (v) =>
-                  (v == null || v.length < 6) ? l.minChars : null,
+              validator: (v) => (v == null || v.length < 6) ? l.minChars : null,
             ),
             const SizedBox(height: 24),
             GradientButton(

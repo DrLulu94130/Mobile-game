@@ -6,6 +6,7 @@ import '../../features/auth/data/auth_repository.dart';
 import '../../features/challenge/presentation/screens/challenge_detail_screen.dart';
 import '../../features/community/presentation/screens/feed_screen.dart';
 import '../../features/daily/presentation/screens/daily_screen.dart';
+import '../../features/discover/presentation/screens/discover_screen.dart';
 import '../../features/editor/presentation/screens/create_screen.dart';
 import '../../features/editor/presentation/screens/editor_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
@@ -69,6 +70,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.feed,
         builder: (_, __) => const FeedScreen(),
+      ),
+      GoRoute(
+        path: Routes.discover,
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const DiscoverScreen(),
       ),
       GoRoute(
         path: Routes.daily,

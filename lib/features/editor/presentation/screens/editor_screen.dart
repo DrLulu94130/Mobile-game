@@ -11,6 +11,7 @@ import '../../../../core/ads/ad_service.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/data/auth_repository.dart';
 import '../../../premium/data/purchase_repository.dart';
 import '../../../share/presentation/share_sheet.dart';
 import '../../domain/entities/inkling_species.dart';
@@ -199,11 +200,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       );
       return;
     }
+
+    final premium = ref.read(isPremiumProvider).valueOrNull ?? false;
+
+    // Posting costs tokens for free players — check the balance before any
+    // rendering work so the refusal is instant.
+    if (!premium) {
+      final balance = ref.read(currentUserProvider).valueOrNull?.tokens ?? 0;
+      if (balance < AppConstants.tokensToPublish) {
+        _showNotEnoughTokens(balance);
+        return;
+      }
+    }
+
     final title = await _askTitle();
     if (title == null || !mounted) return;
 
     final l = AppLocalizations.of(context);
-    final premium = ref.read(isPremiumProvider).valueOrNull ?? false;
 
     showDialog<void>(
       context: context,
@@ -217,6 +230,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           title: title,
           isPublic: true,
           hd: premium,
+          chargeTokens: !premium,
           photoScale: state.photoScale,
           photoPan: state.photoPan,
         );
@@ -235,8 +249,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           ),
         );
         // Free tier: an interstitial after publishing (frequency-capped).
-        if (!premium &&
-            ref.read(adServiceProvider).shouldShowAfterAction()) {
+        if (!premium && ref.read(adServiceProvider).shouldShowAfterAction()) {
           await ref.read(adServiceProvider).maybeShowInterstitial();
         }
       },
@@ -249,9 +262,48 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
+  void _showNotEnoughTokens(int balance) {
+    final l = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.toll_rounded, size: 40, color: AppColors.splash),
+            const SizedBox(height: 12),
+            Text(
+              l.notEnoughTokensTitle,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l.notEnoughTokensBody(AppConstants.tokensToPublish, balance),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(sheetContext);
+                context.push(Routes.discover);
+              },
+              icon: const Icon(Icons.swipe_up_rounded),
+              label: Text(l.goDiscover),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<String?> _askTitle() {
     final controller = TextEditingController();
     final l = AppLocalizations.of(context);
+    final premium = ref.read(isPremiumProvider).valueOrNull ?? false;
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -269,7 +321,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: Text(l.publish),
+            child: Text(
+              premium ? l.publish : l.publishCost(AppConstants.tokensToPublish),
+            ),
           ),
         ],
       ),
@@ -339,8 +393,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               controller.setBrushColor(color);
               controller.setTool(EditorTool.brush);
             },
-            onSampleFromCanvas: () =>
-                controller.setTool(EditorTool.eyedropper),
+            onSampleFromCanvas: () => controller.setTool(EditorTool.eyedropper),
           ),
         ],
       ),

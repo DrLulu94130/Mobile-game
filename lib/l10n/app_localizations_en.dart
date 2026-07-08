@@ -386,4 +386,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nothingTodayBody => 'Check back later or create the first one.';
+
+  @override
+  String get discoverTitle => 'Discover';
+
+  @override
+  String get discoverEmpty => 'No drawings to find yet';
+
+  @override
+  String get discoverFoundAll => 'Found them all!';
+
+  @override
+  String get discoverTimeUp => 'Time\'s up!';
+
+  @override
+  String get discoverDrawingWins => 'This drawing fooled you';
+
+  @override
+  String get discoverSwipeNext => 'Swipe up for the next drawing';
+
+  @override
+  String get nextDrawing => 'Next drawing';
+
+  @override
+  String tokensEarned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count tokens',
+      one: '+1 token',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String drawingRating(String stars) {
+    return 'Drawing\'s note: $stars/5';
+  }
+
+  @override
+  String get notEnoughTokensTitle => 'Not enough tokens';
+
+  @override
+  String notEnoughTokensBody(int cost, int balance) {
+    return 'Posting a drawing costs $cost tokens and you have $balance. Scroll the Discover feed to earn more!';
+  }
+
+  @override
+  String get goDiscover => 'Go discover';
+
+  @override
+  String publishCost(int cost) {
+    return 'Publish ($cost tokens)';
+  }
+
+  @override
+  String get topDrawings => 'Drawings';
+
+  @override
+  String get noRatingYet => 'No rated drawings yet';
+
+  @override
+  String seekStats(int wins, int fails) {
+    return '$wins found it · $fails fooled';
+  }
 }

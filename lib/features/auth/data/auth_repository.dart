@@ -117,7 +117,9 @@ class AuthRepository {
 
   String _mapAuthError(FirebaseAuthException e) {
     return switch (e.code) {
-      'user-not-found' || 'wrong-password' || 'invalid-credential' =>
+      'user-not-found' ||
+      'wrong-password' ||
+      'invalid-credential' =>
         'Incorrect email or password',
       'email-already-in-use' => 'That email is already registered',
       'weak-password' => 'Please choose a stronger password',

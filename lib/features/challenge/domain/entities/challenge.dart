@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_constants.dart';
 import '../../../editor/domain/entities/placed_inkling.dart';
 
 /// A published (or draft) hide-and-seek challenge.
@@ -19,6 +20,9 @@ class Challenge {
     this.bestTimeMs,
     this.isPublic = true,
     this.difficulty = 1,
+    this.seekWinCount = 0,
+    this.seekFailCount = 0,
+    this.ratingScore = 0,
   });
 
   final String id;
@@ -49,7 +53,32 @@ class Challenge {
   /// 1..5 difficulty derived from Inkling count and camouflage density.
   final int difficulty;
 
+  /// Discover-mode outcomes: seekers who found every Inkling in time…
+  final int seekWinCount;
+
+  /// …and seekers the drawing fooled (timed out / gave up).
+  final int seekFailCount;
+
+  /// Denormalised note 0..100 — the share of seekers this drawing fooled.
+  /// Kept on the document so drawings can be ranked with a single query.
+  final int ratingScore;
+
   int get inklingCount => inklings.length;
+
+  int get seekAttempts => seekWinCount + seekFailCount;
+
+  /// A note only becomes meaningful after a few rounds.
+  bool get hasRating => seekAttempts >= AppConstants.minSeekAttemptsForRating;
+
+  /// The note shown in the UI, out of 5 stars.
+  double get ratingStars => ratingScore / 20.0;
+
+  /// Share (0..100) of seekers fooled — the drawing's note.
+  static int computeRatingScore(int wins, int fails) {
+    final attempts = wins + fails;
+    if (attempts == 0) return 0;
+    return (fails * 100 / attempts).round();
+  }
 
   Challenge copyWith({
     int? likeCount,
@@ -57,6 +86,9 @@ class Challenge {
     int? playCount,
     int? bestTimeMs,
     bool? isPublic,
+    int? seekWinCount,
+    int? seekFailCount,
+    int? ratingScore,
   }) {
     return Challenge(
       id: id,
@@ -75,6 +107,9 @@ class Challenge {
       bestTimeMs: bestTimeMs ?? this.bestTimeMs,
       isPublic: isPublic ?? this.isPublic,
       difficulty: difficulty,
+      seekWinCount: seekWinCount ?? this.seekWinCount,
+      seekFailCount: seekFailCount ?? this.seekFailCount,
+      ratingScore: ratingScore ?? this.ratingScore,
     );
   }
 
@@ -96,6 +131,9 @@ class Challenge {
         'bestTimeMs': bestTimeMs,
         'isPublic': isPublic,
         'difficulty': difficulty,
+        'seekWinCount': seekWinCount,
+        'seekFailCount': seekFailCount,
+        'ratingScore': ratingScore,
       };
 
   factory Challenge.fromJson(String id, Map<String, dynamic> json) {
@@ -110,8 +148,7 @@ class Challenge {
       inklings: (json['inklings'] as List? ?? [])
           .map((e) => PlacedInkling.fromJson(e as Map<String, dynamic>))
           .toList(),
-      canvasAspectRatio:
-          (json['canvasAspectRatio'] as num?)?.toDouble() ?? 1.0,
+      canvasAspectRatio: (json['canvasAspectRatio'] as num?)?.toDouble() ?? 1.0,
       createdAt: _parseDate(json['createdAt']),
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
@@ -119,6 +156,9 @@ class Challenge {
       bestTimeMs: (json['bestTimeMs'] as num?)?.toInt(),
       isPublic: json['isPublic'] as bool? ?? true,
       difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
+      seekWinCount: (json['seekWinCount'] as num?)?.toInt() ?? 0,
+      seekFailCount: (json['seekFailCount'] as num?)?.toInt() ?? 0,
+      ratingScore: (json['ratingScore'] as num?)?.toInt() ?? 0,
     );
   }
 

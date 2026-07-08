@@ -60,7 +60,8 @@ abstract class PhotoFraming {
     Offset pan,
   ) {
     final dest = destRect(canvas, photoAspect, scale, pan);
-    final px = Offset(canvasNorm.dx * canvas.width, canvasNorm.dy * canvas.height);
+    final px =
+        Offset(canvasNorm.dx * canvas.width, canvasNorm.dy * canvas.height);
     return Offset(
       ((px.dx - dest.left) / dest.width).clamp(0.0, 1.0),
       ((px.dy - dest.top) / dest.height).clamp(0.0, 1.0),

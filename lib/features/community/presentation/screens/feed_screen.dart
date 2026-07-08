@@ -1,14 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inkognito/l10n/app_localizations.dart';
 
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/app_widgets.dart';
 import '../../../challenge/data/challenge_repository.dart';
-import '../../../editor/domain/entities/inkling_species.dart';
-import '../../../../shared/widgets/inkling_avatar.dart';
 import '../widgets/challenge_card.dart';
 
 /// The community feed: a scrollable list of the newest public challenges plus
@@ -87,7 +86,8 @@ class _PremiumChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionChip(
-      avatar: const Icon(Icons.workspace_premium, size: 18, color: AppColors.glow),
+      avatar:
+          const Icon(Icons.workspace_premium, size: 18, color: AppColors.glow),
       label: Text(AppLocalizations.of(context).premium),
       onPressed: () => context.push(Routes.premium),
     );
@@ -128,9 +128,21 @@ class _TrendingStrip extends ConsumerWidget {
                     onTap: () => context.push(Routes.playPath(c.id)),
                     child: Column(
                       children: [
-                        const InklingAvatar(
-                          species: InklingSpecies.classic,
-                          size: 56,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: CachedNetworkImage(
+                            imageUrl: c.camouflagedImageUrl,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => const SizedBox(
+                              width: 56,
+                              height: 56,
+                              child: ColoredBox(color: Colors.black12),
+                            ),
+                            errorWidget: (_, __, ___) =>
+                                const Icon(Icons.broken_image_outlined),
+                          ),
                         ),
                         const SizedBox(height: 4),
                         SizedBox(

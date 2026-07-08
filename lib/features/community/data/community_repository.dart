@@ -47,8 +47,9 @@ class CommunityRepository {
         .orderBy('createdAt', descending: true)
         .limit(100)
         .snapshots()
-        .map((s) =>
-            s.docs.map((d) => Comment.fromJson(d.id, d.data())).toList());
+        .map(
+          (s) => s.docs.map((d) => Comment.fromJson(d.id, d.data())).toList(),
+        );
   }
 
   Future<void> addComment(Comment comment) async {

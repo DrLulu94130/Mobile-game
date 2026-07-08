@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inkognito/l10n/app_localizations.dart';
@@ -9,15 +10,17 @@ import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/juicy_button.dart';
 import '../../../../shared/widgets/mascot_3d.dart';
+import '../../../auth/data/auth_repository.dart';
 
 /// The game's main menu: the live 3D character front and centre, one glowing
 /// "hide" CTA and one "seek" CTA. No tabs, no app chrome — arcade first.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
+    final tokens = ref.watch(currentUserProvider).valueOrNull?.tokens ?? 0;
     return Scaffold(
       body: DecoratedBox(
         decoration: const BoxDecoration(gradient: AppColors.brandGradient),
@@ -33,6 +36,8 @@ class HomeScreen extends StatelessWidget {
                       icon: Icons.settings_rounded,
                       onTap: () => context.push(Routes.settings),
                     ),
+                    const SizedBox(width: 8),
+                    _TokenBalance(tokens: tokens),
                     const Spacer(),
                     _RoundIcon(
                       icon: Icons.workspace_premium_rounded,
@@ -116,13 +121,110 @@ class HomeScreen extends StatelessWidget {
                       title: l.homeSeekCta,
                       subtitle: l.homeSeekSub,
                       icon: Icons.search_rounded,
-                      onPressed: () => context.push(Routes.feed),
+                      onPressed: () => context.push(Routes.discover),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _QuickLink(
+                          icon: Icons.grid_view_rounded,
+                          label: l.navFeed,
+                          onTap: () => context.push(Routes.feed),
+                        ),
+                        const SizedBox(width: 10),
+                        _QuickLink(
+                          icon: Icons.today_rounded,
+                          label: l.navDaily,
+                          onTap: () => context.push(Routes.daily),
+                        ),
+                        const SizedBox(width: 10),
+                        _QuickLink(
+                          icon: Icons.leaderboard_rounded,
+                          label: l.navRanks,
+                          onTap: () => context.push(Routes.leaderboard),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
               // Free-tier banner (renders nothing for Premium users).
               const BannerAdWidget(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The player's token balance ("jetons"), spent to publish drawings.
+class _TokenBalance extends StatelessWidget {
+  const _TokenBalance({required this.tokens});
+  final int tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.toll_rounded, color: AppColors.glow, size: 18),
+          const SizedBox(width: 6),
+          Text(
+            '$tokens',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small pill linking to a secondary screen (gallery, daily, rankings).
+class _QuickLink extends StatelessWidget {
+  const _QuickLink({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.14),
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: Colors.white, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
         ),

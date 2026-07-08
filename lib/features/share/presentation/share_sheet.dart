@@ -31,7 +31,11 @@ class ShareSheet extends ConsumerWidget {
     (ShareTarget.copyLink, Icons.link, AppColors.ink),
   ];
 
-  Future<void> _share(BuildContext context, WidgetRef ref, ShareTarget t) async {
+  Future<void> _share(
+    BuildContext context,
+    WidgetRef ref,
+    ShareTarget t,
+  ) async {
     await ref.read(shareServiceProvider).share(
           target: t,
           camouflagedImage: camouflagedBytes,

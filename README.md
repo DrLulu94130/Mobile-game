@@ -24,6 +24,9 @@ the clock.
 | **Export** | Generates a camouflaged image **and** a revealed solution image |
 | **Sharing** | Instagram Story, Snapchat, TikTok, WhatsApp, Messages, Copy link — the shared media contains only the camouflaged photo; the link deep-links into the app or the store |
 | **Play / detection** | Recipients tap to find Inklings; scored on finds, time and accuracy |
+| **Discover** | TikTok-style vertical scroll of everyone's drawings: 10 seconds to find every Inkling; wins/losses feed each drawing's note |
+| **Tokens** | Scrolling Discover earns tokens (+1 per drawing, +2 per win); publishing a drawing costs 15 tokens (free for Premium) |
+| **Ratings** | Every drawing gets a note out of 5 — the share of seekers it fooled — shown on feed cards and ranked in a dedicated leaderboard tab |
 | **Community** | Feed, likes, comments, trending, daily challenges, popular creators |
 | **Progression** | XP, levels, achievements, badges, daily streaks |
 | **Packs** | Six original creature families; premium packs gated |

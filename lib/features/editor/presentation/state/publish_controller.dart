@@ -12,6 +12,7 @@ import '../../../challenge/data/challenge_repository.dart';
 import '../../../challenge/data/image_export_service.dart';
 import '../../../challenge/data/storage_service.dart';
 import '../../../challenge/domain/entities/challenge.dart';
+import '../../../economy/data/token_service.dart';
 import '../../../progression/data/progression_service.dart';
 import '../../domain/entities/placed_inkling.dart';
 import '../../domain/photo_framing.dart';
@@ -41,14 +42,30 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
     required String title,
     required bool isPublic,
     bool hd = false,
+    bool chargeTokens = true,
     double photoScale = 1.0,
     Offset photoPan = Offset.zero,
   }) async {
     state = const AsyncLoading();
+    var charged = false;
     try {
       final user = ref.read(authRepositoryProvider).currentUser;
       if (user == null) {
         return const Err(ValidationFailure('You must be signed in'));
+      }
+
+      // Posting costs tokens (Premium publishes for free). Charged up front
+      // so a failed balance never uploads images.
+      if (chargeTokens) {
+        final paid = await ref
+            .read(tokenServiceProvider)
+            .trySpend(user.uid, AppConstants.tokensToPublish);
+        if (!paid) {
+          const failure = ValidationFailure('Not enough tokens');
+          state = AsyncError(failure, StackTrace.current);
+          return const Err(failure);
+        }
+        charged = true;
       }
 
       final export = ref.read(imageExportServiceProvider);
@@ -121,12 +138,28 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
           state = AsyncData(output);
           return Success(output);
         case Err(failure: final f):
+          await _refund(charged);
           state = AsyncError(f, StackTrace.current);
           return Err(f);
       }
     } catch (e, st) {
+      await _refund(charged);
       state = AsyncError(e, st);
       return Err(UnknownFailure(e.toString()));
+    }
+  }
+
+  /// Returns the publish fee when the challenge never made it online.
+  Future<void> _refund(bool charged) async {
+    if (!charged) return;
+    final user = ref.read(authRepositoryProvider).currentUser;
+    if (user == null) return;
+    try {
+      await ref
+          .read(tokenServiceProvider)
+          .earn(user.uid, AppConstants.tokensToPublish);
+    } catch (_) {
+      // Best-effort: losing the refund is preferable to crashing the flow.
     }
   }
 

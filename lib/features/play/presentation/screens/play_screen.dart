@@ -55,16 +55,27 @@ class _PlayView extends ConsumerStatefulWidget {
 }
 
 class _PlayViewState extends ConsumerState<_PlayView> {
-  late final PlaySession _session;
+  late PlaySession _session;
   Timer? _ticker;
   Offset? _lastMiss;
   bool _finished = false;
+
+  /// Rewards are granted once per screen visit: replaying after seeing the
+  /// solution must not farm XP, attempts or best times.
+  bool _rewarded = false;
 
   @override
   void initState() {
     super.initState();
     _session = PlaySession(inklings: widget.challenge.inklings);
-    ref.read(challengeRepositoryProvider).incrementPlayCount(widget.challenge.id);
+    ref
+        .read(challengeRepositoryProvider)
+        .incrementPlayCount(widget.challenge.id);
+    _startTicker();
+  }
+
+  void _startTicker() {
+    _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && !_finished) setState(() {});
     });
@@ -98,7 +109,8 @@ class _PlayViewState extends ConsumerState<_PlayView> {
     final score = _session.computeScore();
     final user = ref.read(authRepositoryProvider).currentUser;
 
-    if (user != null) {
+    if (user != null && !_rewarded) {
+      _rewarded = true;
       final attempt = Attempt(
         id: '',
         challengeId: widget.challenge.id,
@@ -111,19 +123,26 @@ class _PlayViewState extends ConsumerState<_PlayView> {
         createdAt: DateTime.now(),
       );
       await ref.read(attemptRepositoryProvider).save(attempt);
-      await ref.read(challengeRepositoryProvider).recordBestTime(
-            widget.challenge.id,
-            _session.elapsed.inMilliseconds,
-          );
-      // Award XP for solving.
-      final xp = AppConstants.xpPerChallengeSolved +
+      // A best time only makes sense for a completed round — giving up
+      // must not claim the record.
+      if (_session.isComplete) {
+        await ref.read(challengeRepositoryProvider).recordBestTime(
+              widget.challenge.id,
+              _session.elapsed.inMilliseconds,
+            );
+      }
+      // Award XP for solving; giving up without finding all of them only
+      // pays for the Inklings actually found.
+      final xp = (_session.isComplete ? AppConstants.xpPerChallengeSolved : 0) +
           _session.foundCount * AppConstants.xpPerInklingFound;
-      await ref.read(progressionServiceProvider).awardXp(
-            uid: user.uid,
-            xpDelta: xp,
-            challengesSolvedDelta: 1,
-            perfectSolvesDelta: _session.isComplete ? 1 : 0,
-          );
+      if (xp > 0) {
+        await ref.read(progressionServiceProvider).awardXp(
+              uid: user.uid,
+              xpDelta: xp,
+              challengesSolvedDelta: _session.isComplete ? 1 : 0,
+              perfectSolvesDelta: _session.isComplete ? 1 : 0,
+            );
+      }
     }
 
     if (mounted) setState(() {});
@@ -141,7 +160,8 @@ class _PlayViewState extends ConsumerState<_PlayView> {
               aspectRatio: widget.challenge.canvasAspectRatio,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final size = Size(constraints.maxWidth, constraints.maxHeight);
+                  final size =
+                      Size(constraints.maxWidth, constraints.maxHeight);
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTapUp: (d) => _onTap(
@@ -211,9 +231,11 @@ class _PlayViewState extends ConsumerState<_PlayView> {
               onReplay: () {
                 setState(() {
                   _finished = false;
-                  _session.found.clear();
-                  _session.taps.clear();
+                  // Fresh session: the previous one keeps accumulating time.
+                  _session = PlaySession(inklings: widget.challenge.inklings);
+                  _lastMiss = null;
                 });
+                _startTicker();
               },
               onDone: () => context.pop(),
             ),

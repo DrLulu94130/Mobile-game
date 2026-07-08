@@ -13,8 +13,7 @@ class Env {
 
   static const String revenueCatAndroidKey =
       String.fromEnvironment('RC_ANDROID_KEY');
-  static const String revenueCatIosKey =
-      String.fromEnvironment('RC_IOS_KEY');
+  static const String revenueCatIosKey = String.fromEnvironment('RC_IOS_KEY');
 
   /// Public deep-link / universal-link host used to open shared challenges.
   static const String dynamicLinkHost =

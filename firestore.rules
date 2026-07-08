@@ -49,11 +49,14 @@ service cloud.firestore {
                        request.resource.data.inklings.size() <= 12;
 
       // Author can edit their own challenge; anyone signed in may bump the
-      // social counters by a single step (like/play/comment flows).
+      // social counters by a single step (like/play/comment flows) and the
+      // seek outcome counters + denormalised note (Discover rounds).
       allow update: if isOwner(resource.data.authorId) ||
                        (isSignedIn() &&
                         onlyCounterDelta(['likeCount', 'playCount',
-                                          'commentCount', 'bestTimeMs']));
+                                          'commentCount', 'bestTimeMs',
+                                          'seekWinCount', 'seekFailCount',
+                                          'ratingScore']));
 
       allow delete: if isOwner(resource.data.authorId);
 

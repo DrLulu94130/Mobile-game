@@ -1,3 +1,5 @@
+import '../../../../core/constants/app_constants.dart';
+
 /// The authenticated user and their gameplay/progression profile.
 class AppUser {
   const AppUser({
@@ -15,6 +17,7 @@ class AppUser {
     this.challengesSolved = 0,
     this.badgeIds = const [],
     this.followerCount = 0,
+    this.tokens = AppConstants.startingTokens,
     this.createdAt,
   });
 
@@ -37,6 +40,10 @@ class AppUser {
   final int challengesSolved;
   final List<String> badgeIds;
   final int followerCount;
+
+  /// Spendable "jetons" earned by seeking; publishing a drawing costs some.
+  final int tokens;
+
   final DateTime? createdAt;
 
   AppUser copyWith({
@@ -51,6 +58,7 @@ class AppUser {
     int? challengesSolved,
     List<String>? badgeIds,
     int? followerCount,
+    int? tokens,
   }) {
     return AppUser(
       uid: uid,
@@ -67,6 +75,7 @@ class AppUser {
       challengesSolved: challengesSolved ?? this.challengesSolved,
       badgeIds: badgeIds ?? this.badgeIds,
       followerCount: followerCount ?? this.followerCount,
+      tokens: tokens ?? this.tokens,
       createdAt: createdAt,
     );
   }
@@ -85,6 +94,7 @@ class AppUser {
         'challengesSolved': challengesSolved,
         'badgeIds': badgeIds,
         'followerCount': followerCount,
+        'tokens': tokens,
       };
 
   factory AppUser.fromJson(String uid, Map<String, dynamic> json) {
@@ -103,6 +113,9 @@ class AppUser {
       challengesSolved: (json['challengesSolved'] as num?)?.toInt() ?? 0,
       badgeIds: (json['badgeIds'] as List? ?? []).cast<String>(),
       followerCount: (json['followerCount'] as num?)?.toInt() ?? 0,
+      // Profiles created before the token economy start with the same grant
+      // as new players.
+      tokens: (json['tokens'] as num?)?.toInt() ?? AppConstants.startingTokens,
     );
   }
 

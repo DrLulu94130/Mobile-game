@@ -386,4 +386,68 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get nothingTodayBody => 'Reviens plus tard ou crée le premier.';
+
+  @override
+  String get discoverTitle => 'Découverte';
+
+  @override
+  String get discoverEmpty => 'Aucun dessin à trouver pour l\'instant';
+
+  @override
+  String get discoverFoundAll => 'Tout trouvé !';
+
+  @override
+  String get discoverTimeUp => 'Temps écoulé !';
+
+  @override
+  String get discoverDrawingWins => 'Ce dessin t\'a piégé';
+
+  @override
+  String get discoverSwipeNext => 'Balaye vers le haut pour le dessin suivant';
+
+  @override
+  String get nextDrawing => 'Dessin suivant';
+
+  @override
+  String tokensEarned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count jetons',
+      one: '+1 jeton',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String drawingRating(String stars) {
+    return 'Note du dessin : $stars/5';
+  }
+
+  @override
+  String get notEnoughTokensTitle => 'Pas assez de jetons';
+
+  @override
+  String notEnoughTokensBody(int cost, int balance) {
+    return 'Publier un dessin coûte $cost jetons et il t\'en reste $balance. Scrolle la Découverte pour en gagner !';
+  }
+
+  @override
+  String get goDiscover => 'Aller découvrir';
+
+  @override
+  String publishCost(int cost) {
+    return 'Publier ($cost jetons)';
+  }
+
+  @override
+  String get topDrawings => 'Dessins';
+
+  @override
+  String get noRatingYet => 'Aucun dessin noté pour l\'instant';
+
+  @override
+  String seekStats(int wins, int fails) {
+    return '$wins l\'ont trouvé · $fails piégés';
+  }
 }

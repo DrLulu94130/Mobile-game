@@ -88,6 +88,36 @@ class ChallengeRepository {
     return _col.doc(id).update({'playCount': FieldValue.increment(1)});
   }
 
+  /// Records the outcome of a Discover round and refreshes the drawing's
+  /// note atomically: the note is the share of seekers the drawing fooled.
+  Future<void> recordSeekResult(String id, {required bool foundAll}) async {
+    await _firestore.runTransaction((tx) async {
+      final ref = _col.doc(id);
+      final snap = await tx.get(ref);
+      if (!snap.exists) return;
+      final data = snap.data()!;
+      final wins =
+          ((data['seekWinCount'] as num?)?.toInt() ?? 0) + (foundAll ? 1 : 0);
+      final fails =
+          ((data['seekFailCount'] as num?)?.toInt() ?? 0) + (foundAll ? 0 : 1);
+      tx.update(ref, {
+        'seekWinCount': wins,
+        'seekFailCount': fails,
+        'ratingScore': Challenge.computeRatingScore(wins, fails),
+      });
+    });
+  }
+
+  /// Best-noted public drawings for the rankings tab.
+  Stream<List<Challenge>> watchTopRated({int limit = 50}) {
+    return _col
+        .where('isPublic', isEqualTo: true)
+        .orderBy('ratingScore', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map(_mapDocs);
+  }
+
   /// Records a new best time transactionally when it beats the stored one.
   Future<void> recordBestTime(String id, int timeMs) async {
     await _firestore.runTransaction((tx) async {
@@ -148,4 +178,14 @@ final challengesByAuthorProvider =
     StreamProvider.autoDispose.family<List<Challenge>, String>(
   (ref, authorId) =>
       ref.watch(challengeRepositoryProvider).watchByAuthor(authorId),
+);
+
+/// Drawings ranked by their note (share of seekers fooled).
+final topRatedChallengesProvider = StreamProvider.autoDispose<List<Challenge>>(
+  (ref) => ref.watch(challengeRepositoryProvider).watchTopRated(),
+);
+
+/// The pool of drawings served to the Discover (scroll & seek) mode.
+final discoverChallengesProvider = StreamProvider.autoDispose<List<Challenge>>(
+  (ref) => ref.watch(challengeRepositoryProvider).watchFeed(limit: 50),
 );

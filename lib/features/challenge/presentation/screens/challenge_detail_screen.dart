@@ -54,8 +54,9 @@ class _DetailView extends ConsumerWidget {
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(bottom: Radius.circular(20)),
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(20),
+                    ),
                     child: CachedNetworkImage(
                       imageUrl: challenge.camouflagedImageUrl,
                       fit: BoxFit.cover,
@@ -105,33 +106,40 @@ class _DetailView extends ConsumerWidget {
                         if (uid != null)
                           _LikeButton(challengeId: challenge.id, uid: uid),
                         const SizedBox(width: 16),
-                        Icon(Icons.mode_comment_outlined,
-                            size: 20, color: AppColors.textMuted),
+                        const Icon(
+                          Icons.mode_comment_outlined,
+                          size: 20,
+                          color: AppColors.textMuted,
+                        ),
                         const SizedBox(width: 4),
                         Text('${challenge.commentCount}'),
                         const Spacer(),
-                        Text(l.plays(challenge.playCount),
-                            style: const TextStyle(color: AppColors.textMuted)),
+                        Text(
+                          l.plays(challenge.playCount),
+                          style: const TextStyle(color: AppColors.textMuted),
+                        ),
                       ],
                     ),
                     const Divider(height: 32),
                     Text(
                       l.comments,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w800, fontSize: 16),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     comments.when(
                       loading: () => const Center(
-                          child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(),
-                      )),
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
                       error: (e, _) => Text('$e'),
                       data: (list) => list.isEmpty
                           ? Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Text(l.beFirstComment),
                             )
                           : Column(
@@ -146,8 +154,7 @@ class _DetailView extends ConsumerWidget {
             ],
           ),
         ),
-        if (uid != null)
-          _CommentComposer(challenge: challenge, uid: uid),
+        if (uid != null) _CommentComposer(challenge: challenge, uid: uid),
       ],
     );
   }
@@ -164,14 +171,13 @@ class _LikeButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final liked = ref
-        .watch(likedProvider((challengeId: challengeId, uid: uid)))
-        .valueOrNull ??
+            .watch(likedProvider((challengeId: challengeId, uid: uid)))
+            .valueOrNull ??
         false;
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () => ref
-          .read(communityRepositoryProvider)
-          .toggleLike(challengeId, uid),
+      onTap: () =>
+          ref.read(communityRepositoryProvider).toggleLike(challengeId, uid),
       child: Row(
         children: [
           Icon(

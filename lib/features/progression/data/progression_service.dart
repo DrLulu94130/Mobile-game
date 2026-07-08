@@ -77,8 +77,7 @@ class ProgressionService {
           'level': newLevel,
           'streakDays': streak,
           'lastActiveDay': today,
-          'challengesCreated':
-              FieldValue.increment(challengesCreatedDelta),
+          'challengesCreated': FieldValue.increment(challengesCreatedDelta),
           'challengesSolved': FieldValue.increment(challengesSolvedDelta),
           'perfectSolves': FieldValue.increment(perfectSolvesDelta),
           'badgeIds': earned,

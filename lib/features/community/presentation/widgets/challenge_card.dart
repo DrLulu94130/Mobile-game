@@ -40,6 +40,12 @@ class ChallengeCard extends StatelessWidget {
                     top: 10,
                     child: _DifficultyBadge(level: challenge.difficulty),
                   ),
+                  if (challenge.hasRating)
+                    Positioned(
+                      left: 10,
+                      top: 10,
+                      child: RatingBadge(stars: challenge.ratingStars),
+                    ),
                   Positioned(
                     right: 12,
                     bottom: 12,
@@ -145,6 +151,38 @@ class _Stat extends StatelessWidget {
         const SizedBox(width: 4),
         Text('$value', style: const TextStyle(color: AppColors.textMuted)),
       ],
+    );
+  }
+}
+
+/// The drawing's note out of 5 — how well it fools seekers.
+class RatingBadge extends StatelessWidget {
+  const RatingBadge({required this.stars, super.key});
+  final double stars;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.star_rounded, size: 14, color: AppColors.glow),
+          const SizedBox(width: 3),
+          Text(
+            stars.toStringAsFixed(1),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

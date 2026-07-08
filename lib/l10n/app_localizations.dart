@@ -817,6 +817,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check back later or create the first one.'**
   String get nothingTodayBody;
+
+  /// No description provided for @discoverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover'**
+  String get discoverTitle;
+
+  /// No description provided for @discoverEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No drawings to find yet'**
+  String get discoverEmpty;
+
+  /// No description provided for @discoverFoundAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Found them all!'**
+  String get discoverFoundAll;
+
+  /// No description provided for @discoverTimeUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Time\'s up!'**
+  String get discoverTimeUp;
+
+  /// No description provided for @discoverDrawingWins.
+  ///
+  /// In en, this message translates to:
+  /// **'This drawing fooled you'**
+  String get discoverDrawingWins;
+
+  /// No description provided for @discoverSwipeNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe up for the next drawing'**
+  String get discoverSwipeNext;
+
+  /// No description provided for @nextDrawing.
+  ///
+  /// In en, this message translates to:
+  /// **'Next drawing'**
+  String get nextDrawing;
+
+  /// No description provided for @tokensEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{+1 token} other{+{count} tokens}}'**
+  String tokensEarned(int count);
+
+  /// No description provided for @drawingRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Drawing\'s note: {stars}/5'**
+  String drawingRating(String stars);
+
+  /// No description provided for @notEnoughTokensTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough tokens'**
+  String get notEnoughTokensTitle;
+
+  /// No description provided for @notEnoughTokensBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting a drawing costs {cost} tokens and you have {balance}. Scroll the Discover feed to earn more!'**
+  String notEnoughTokensBody(int cost, int balance);
+
+  /// No description provided for @goDiscover.
+  ///
+  /// In en, this message translates to:
+  /// **'Go discover'**
+  String get goDiscover;
+
+  /// No description provided for @publishCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish ({cost} tokens)'**
+  String publishCost(int cost);
+
+  /// No description provided for @topDrawings.
+  ///
+  /// In en, this message translates to:
+  /// **'Drawings'**
+  String get topDrawings;
+
+  /// No description provided for @noRatingYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No rated drawings yet'**
+  String get noRatingYet;
+
+  /// No description provided for @seekStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{wins} found it · {fails} fooled'**
+  String seekStats(int wins, int fails);
 }
 
 class _AppLocalizationsDelegate
