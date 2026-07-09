@@ -12,6 +12,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
+import '../../../economy/data/token_service.dart';
 import '../../../premium/data/purchase_repository.dart';
 import '../../../share/presentation/share_sheet.dart';
 import '../../domain/entities/inkling_species.dart';
@@ -294,10 +295,44 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               icon: const Icon(Icons.swipe_up_rounded),
               label: Text(l.goDiscover),
             ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: () async {
+                Navigator.pop(sheetContext);
+                await _watchAdForTokens();
+              },
+              icon: const Icon(Icons.play_circle_outline),
+              label: Text(l.watchAdForTokens(AppConstants.tokensPerRewardedAd)),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _watchAdForTokens() async {
+    final l = AppLocalizations.of(context);
+    final ad = ref.read(adServiceProvider);
+    if (!ad.isRewardedReady) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.adNotReady)),
+      );
+      return;
+    }
+    final earned = await ad.showRewarded();
+    if (!earned || !mounted) return;
+    final uid = ref.read(currentUserProvider).valueOrNull?.uid;
+    if (uid == null) return;
+    await ref
+        .read(tokenServiceProvider)
+        .earn(uid, AppConstants.tokensPerRewardedAd);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l.tokensEarned(AppConstants.tokensPerRewardedAd)),
+        ),
+      );
+    }
   }
 
   Future<String?> _askTitle() {

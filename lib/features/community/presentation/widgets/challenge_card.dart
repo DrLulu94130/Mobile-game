@@ -106,26 +106,33 @@ class _AuthorRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: AppColors.ink.withValues(alpha: 0.2),
-            backgroundImage: challenge.authorAvatarUrl != null
-                ? CachedNetworkImageProvider(challenge.authorAvatarUrl!)
-                : null,
-            child: challenge.authorAvatarUrl == null
-                ? Text(
-                    challenge.authorName.characters.first.toUpperCase(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.ink,
-                    ),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 10),
-          Text(
-            challenge.authorName,
-            style: const TextStyle(fontWeight: FontWeight.w700),
+          GestureDetector(
+            onTap: () => context.push(Routes.creatorPath(challenge.authorId)),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: AppColors.ink.withValues(alpha: 0.2),
+                  backgroundImage: challenge.authorAvatarUrl != null
+                      ? CachedNetworkImageProvider(challenge.authorAvatarUrl!)
+                      : null,
+                  child: challenge.authorAvatarUrl == null
+                      ? Text(
+                          challenge.authorName.characters.first.toUpperCase(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.ink,
+                          ),
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  challenge.authorName,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
           ),
           const Spacer(),
           Text(

@@ -24,6 +24,9 @@ abstract class Routes {
   static const String play = '/play/:id';
   static String playPath(String id) => '/play/$id';
 
+  static const String creator = '/creator/:id';
+  static String creatorPath(String id) => '/creator/$id';
+
   static const String packs = '/packs';
   static const String premium = '/premium';
   static const String settings = '/settings';

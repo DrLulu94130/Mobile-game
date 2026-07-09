@@ -94,6 +94,14 @@ class AuthRepository {
 
   Future<void> signOut() => _auth.signOut();
 
+  /// Persists that the player has seen the one-time Discover how-to overlay.
+  Future<void> markDiscoverTutorialSeen(String uid) async {
+    await _users.doc(uid).set(
+      {'discoverTutorialSeen': true},
+      SetOptions(merge: true),
+    );
+  }
+
   /// Creates the Firestore profile document on first sign-in.
   Future<AppUser> _ensureProfile(User user, {String? displayName}) async {
     final ref = _users.doc(user.uid);

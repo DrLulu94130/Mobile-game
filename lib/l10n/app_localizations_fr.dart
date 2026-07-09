@@ -438,4 +438,105 @@ class AppLocalizationsFr extends AppLocalizations {
   String seekStats(int wins, int fails) {
     return '$wins l\'ont trouvé · $fails piégés';
   }
+
+  @override
+  String get masterpiecesTitle => 'Ou pars d\'un chef-d\'œuvre';
+
+  @override
+  String get masterpiecesSub =>
+      'Des tableaux célèbres, peints dans l\'app — les fonds chargés sont les meilleures cachettes.';
+
+  @override
+  String get masterpieceStarryNight => 'La Nuit étoilée';
+
+  @override
+  String get masterpieceGreatWave => 'La Grande Vague';
+
+  @override
+  String get masterpieceWaterLilies => 'Les Nymphéas';
+
+  @override
+  String get masterpieceScream => 'Le Cri';
+
+  @override
+  String get masterpieceGrid => 'Grille colorée';
+
+  @override
+  String get masterpieceGolden => 'Jardin doré';
+
+  @override
+  String get discoverDailyBadge => 'Du jour · jetons doublés';
+
+  @override
+  String discoverComboLabel(int count) {
+    return 'combo ×$count';
+  }
+
+  @override
+  String get discoverTutorialTitle => 'Trouve les créatures cachées';
+
+  @override
+  String get discoverTutorialBody =>
+      'Tu as quelques secondes par dessin. Touche les Inklings avant la fin du temps. Chaque dessin rapporte des jetons ; gagner en rapporte plus — et construit un combo !';
+
+  @override
+  String get discoverTutorialCta => 'C\'est parti';
+
+  @override
+  String get dailyScrollCapReached =>
+      'Bonus de scroll quotidien atteint — continue de jouer pour gagner des jetons de victoire !';
+
+  @override
+  String watchAdForTokens(int count) {
+    return 'Regarder une pub (+$count jetons)';
+  }
+
+  @override
+  String get adNotReady =>
+      'Aucune pub disponible pour l\'instant, réessaie bientôt.';
+
+  @override
+  String get likeDrawing => 'Bien caché !';
+
+  @override
+  String get reportDrawing => 'Signaler';
+
+  @override
+  String get reportSubmitted => 'Merci — on va vérifier.';
+
+  @override
+  String get reportTitle => 'Signaler ce dessin';
+
+  @override
+  String get reportBody =>
+      'Dis-nous ce qui ne va pas pour que les modérateurs puissent vérifier.';
+
+  @override
+  String get reportReasonInappropriate => 'Contenu inapproprié';
+
+  @override
+  String get reportReasonImpossible => 'Impossible à résoudre';
+
+  @override
+  String get reportReasonSpam => 'Spam ou n\'importe quoi';
+
+  @override
+  String get creatorProfile => 'Créateur';
+
+  @override
+  String creatorDrawings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dessins',
+      one: '1 dessin',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get avgRating => 'Note moy.';
+
+  @override
+  String get followers => 'Abonnés';
 }

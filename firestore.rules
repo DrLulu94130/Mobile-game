@@ -19,10 +19,18 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    // Only these fields changed, each by exactly +1 or -1.
+    // Only these fields changed (used for the seek/note group whose values
+    // move together and can't be expressed as a fixed ±1 step).
     function onlyCounterDelta(fields) {
       return request.resource.data.diff(resource.data).affectedKeys()
                  .hasOnly(fields);
+    }
+
+    // A single named counter moved by exactly `step` and nothing else changed.
+    function isSingleStep(field, step) {
+      return request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly([field]) &&
+             request.resource.data[field] == resource.data[field] + step;
     }
 
     // --- Users / profiles ---
@@ -48,15 +56,21 @@ service cloud.firestore {
                        request.resource.data.title.size() <= 60 &&
                        request.resource.data.inklings.size() <= 12;
 
-      // Author can edit their own challenge; anyone signed in may bump the
-      // social counters by a single step (like/play/comment flows) and the
-      // seek outcome counters + denormalised note (Discover rounds).
+      // Author can edit their own challenge. Anyone signed in may:
+      //  * bump a single low-stakes counter by exactly +1 (play / report), or
+      //    the like counter by ±1;
+      //  * record a Discover outcome — the seek counters + note move together,
+      //    so those are permitted as a group (values validated server-side by
+      //    the recordSeekResult transaction and the creator-reward function).
       allow update: if isOwner(resource.data.authorId) ||
                        (isSignedIn() &&
-                        onlyCounterDelta(['likeCount', 'playCount',
-                                          'commentCount', 'bestTimeMs',
-                                          'seekWinCount', 'seekFailCount',
-                                          'ratingScore']));
+                        (isSingleStep('playCount', 1) ||
+                         isSingleStep('reportCount', 1) ||
+                         isSingleStep('likeCount', 1) ||
+                         isSingleStep('likeCount', -1) ||
+                         onlyCounterDelta(['bestTimeMs']) ||
+                         onlyCounterDelta(['seekWinCount', 'seekFailCount',
+                                           'ratingScore'])));
 
       allow delete: if isOwner(resource.data.authorId);
 

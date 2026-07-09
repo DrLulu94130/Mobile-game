@@ -438,4 +438,103 @@ class AppLocalizationsEn extends AppLocalizations {
   String seekStats(int wins, int fails) {
     return '$wins found it · $fails fooled';
   }
+
+  @override
+  String get masterpiecesTitle => 'Or start from a masterpiece';
+
+  @override
+  String get masterpiecesSub =>
+      'Famous paintings, hand-painted in-app — busy backgrounds make the best hiding spots.';
+
+  @override
+  String get masterpieceStarryNight => 'Starry Night';
+
+  @override
+  String get masterpieceGreatWave => 'The Great Wave';
+
+  @override
+  String get masterpieceWaterLilies => 'Water Lilies';
+
+  @override
+  String get masterpieceScream => 'The Scream';
+
+  @override
+  String get masterpieceGrid => 'Colour Grid';
+
+  @override
+  String get masterpieceGolden => 'Golden Garden';
+
+  @override
+  String get discoverDailyBadge => 'Daily · double tokens';
+
+  @override
+  String discoverComboLabel(int count) {
+    return '$count× combo';
+  }
+
+  @override
+  String get discoverTutorialTitle => 'Find the hidden creatures';
+
+  @override
+  String get discoverTutorialBody =>
+      'You have a few seconds per drawing. Tap the Inklings before time runs out. Every drawing earns tokens; winning earns more — and builds a combo!';
+
+  @override
+  String get discoverTutorialCta => 'Let\'s go';
+
+  @override
+  String get dailyScrollCapReached =>
+      'Daily scroll bonus maxed out — keep playing to earn win tokens!';
+
+  @override
+  String watchAdForTokens(int count) {
+    return 'Watch an ad (+$count tokens)';
+  }
+
+  @override
+  String get adNotReady => 'No ad available right now, try again shortly.';
+
+  @override
+  String get likeDrawing => 'Nice hide!';
+
+  @override
+  String get reportDrawing => 'Report';
+
+  @override
+  String get reportSubmitted => 'Thanks — we\'ll take a look.';
+
+  @override
+  String get reportTitle => 'Report this drawing';
+
+  @override
+  String get reportBody => 'Tell us what\'s wrong so moderators can review it.';
+
+  @override
+  String get reportReasonInappropriate => 'Inappropriate content';
+
+  @override
+  String get reportReasonImpossible => 'Impossible to solve';
+
+  @override
+  String get reportReasonSpam => 'Spam or nonsense';
+
+  @override
+  String get creatorProfile => 'Creator';
+
+  @override
+  String creatorDrawings(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count drawings',
+      one: '1 drawing',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get avgRating => 'Avg note';
+
+  @override
+  String get followers => 'Followers';
 }

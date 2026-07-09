@@ -16,6 +16,7 @@ import '../../features/onboarding/presentation/screens/splash_screen.dart';
 import '../../features/packs/presentation/screens/packs_screen.dart';
 import '../../features/play/presentation/screens/play_screen.dart';
 import '../../features/premium/presentation/screens/premium_screen.dart';
+import '../../features/profile/presentation/screens/creator_profile_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/progression/presentation/screens/badges_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
@@ -112,6 +113,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         builder: (_, state) =>
             PlayScreen(challengeId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: Routes.creator,
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) =>
+            CreatorProfileScreen(creatorId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: Routes.packs,

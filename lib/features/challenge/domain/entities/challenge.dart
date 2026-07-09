@@ -23,6 +23,7 @@ class Challenge {
     this.seekWinCount = 0,
     this.seekFailCount = 0,
     this.ratingScore = 0,
+    this.reportCount = 0,
   });
 
   final String id;
@@ -63,6 +64,9 @@ class Challenge {
   /// Kept on the document so drawings can be ranked with a single query.
   final int ratingScore;
 
+  /// How many players have flagged this drawing for moderation.
+  final int reportCount;
+
   int get inklingCount => inklings.length;
 
   int get seekAttempts => seekWinCount + seekFailCount;
@@ -89,6 +93,7 @@ class Challenge {
     int? seekWinCount,
     int? seekFailCount,
     int? ratingScore,
+    int? reportCount,
   }) {
     return Challenge(
       id: id,
@@ -110,6 +115,7 @@ class Challenge {
       seekWinCount: seekWinCount ?? this.seekWinCount,
       seekFailCount: seekFailCount ?? this.seekFailCount,
       ratingScore: ratingScore ?? this.ratingScore,
+      reportCount: reportCount ?? this.reportCount,
     );
   }
 
@@ -134,6 +140,7 @@ class Challenge {
         'seekWinCount': seekWinCount,
         'seekFailCount': seekFailCount,
         'ratingScore': ratingScore,
+        'reportCount': reportCount,
       };
 
   factory Challenge.fromJson(String id, Map<String, dynamic> json) {
@@ -159,6 +166,7 @@ class Challenge {
       seekWinCount: (json['seekWinCount'] as num?)?.toInt() ?? 0,
       seekFailCount: (json['seekFailCount'] as num?)?.toInt() ?? 0,
       ratingScore: (json['ratingScore'] as num?)?.toInt() ?? 0,
+      reportCount: (json['reportCount'] as num?)?.toInt() ?? 0,
     );
   }
 

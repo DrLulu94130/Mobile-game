@@ -18,6 +18,7 @@ class AppUser {
     this.badgeIds = const [],
     this.followerCount = 0,
     this.tokens = AppConstants.startingTokens,
+    this.discoverTutorialSeen = false,
     this.createdAt,
   });
 
@@ -44,6 +45,9 @@ class AppUser {
   /// Spendable "jetons" earned by seeking; publishing a drawing costs some.
   final int tokens;
 
+  /// Whether the player has seen the one-time Discover how-to overlay.
+  final bool discoverTutorialSeen;
+
   final DateTime? createdAt;
 
   AppUser copyWith({
@@ -59,6 +63,7 @@ class AppUser {
     List<String>? badgeIds,
     int? followerCount,
     int? tokens,
+    bool? discoverTutorialSeen,
   }) {
     return AppUser(
       uid: uid,
@@ -76,6 +81,7 @@ class AppUser {
       badgeIds: badgeIds ?? this.badgeIds,
       followerCount: followerCount ?? this.followerCount,
       tokens: tokens ?? this.tokens,
+      discoverTutorialSeen: discoverTutorialSeen ?? this.discoverTutorialSeen,
       createdAt: createdAt,
     );
   }
@@ -95,6 +101,7 @@ class AppUser {
         'badgeIds': badgeIds,
         'followerCount': followerCount,
         'tokens': tokens,
+        'discoverTutorialSeen': discoverTutorialSeen,
       };
 
   factory AppUser.fromJson(String uid, Map<String, dynamic> json) {
@@ -116,6 +123,7 @@ class AppUser {
       // Profiles created before the token economy start with the same grant
       // as new players.
       tokens: (json['tokens'] as num?)?.toInt() ?? AppConstants.startingTokens,
+      discoverTutorialSeen: json['discoverTutorialSeen'] as bool? ?? false,
     );
   }
 

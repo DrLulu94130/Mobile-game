@@ -20,60 +20,79 @@ class FeedScreen extends ConsumerWidget {
     final feed = ref.watch(feedProvider);
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(feedProvider),
-        child: CustomScrollView(
-          slivers: [
-            const SliverAppBar(
-              floating: true,
-              titleSpacing: 20,
-              title: Text(
-                'Inkognito',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
-              ),
-              actions: [
-                Padding(
-                  padding: EdgeInsets.only(right: 12),
-                  child: _PremiumChip(),
+        onRefresh: () async {
+          ref.read(feedLimitProvider.notifier).state = 20;
+          ref.invalidate(feedProvider);
+        },
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            // Grow the window as the player nears the end of the list.
+            if (notification.metrics.pixels >=
+                notification.metrics.maxScrollExtent - 600) {
+              final current = ref.read(feedLimitProvider);
+              final loaded = feed.valueOrNull?.length ?? 0;
+              // Only extend when the current window is actually full, so we
+              // don't keep growing past the last drawing.
+              if (loaded >= current) {
+                ref.read(feedLimitProvider.notifier).state = current + 20;
+              }
+            }
+            return false;
+          },
+          child: CustomScrollView(
+            slivers: [
+              const SliverAppBar(
+                floating: true,
+                titleSpacing: 20,
+                title: Text(
+                  'Inkognito',
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
                 ),
-              ],
-            ),
-            const SliverToBoxAdapter(child: _TrendingStrip()),
-            feed.when(
-              loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+                actions: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: _PremiumChip(),
+                  ),
+                ],
               ),
-              error: (e, _) => SliverFillRemaining(
-                child: StateMessage(
-                  icon: Icons.wifi_off,
-                  title: AppLocalizations.of(context).feedEmptyTitle,
-                  subtitle: '$e',
+              const SliverToBoxAdapter(child: _TrendingStrip()),
+              feed.when(
+                loading: () => const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
                 ),
-              ),
-              data: (challenges) {
-                if (challenges.isEmpty) {
-                  final l = AppLocalizations.of(context);
-                  return SliverFillRemaining(
-                    child: StateMessage(
-                      icon: Icons.explore_off_outlined,
-                      title: l.feedEmptyTitle,
-                      subtitle: l.feedEmptyBody,
-                      action: FilledButton.icon(
-                        onPressed: () => context.push(Routes.create),
-                        icon: const Icon(Icons.add),
-                        label: Text(l.createOne),
+                error: (e, _) => SliverFillRemaining(
+                  child: StateMessage(
+                    icon: Icons.wifi_off,
+                    title: AppLocalizations.of(context).feedEmptyTitle,
+                    subtitle: '$e',
+                  ),
+                ),
+                data: (challenges) {
+                  if (challenges.isEmpty) {
+                    final l = AppLocalizations.of(context);
+                    return SliverFillRemaining(
+                      child: StateMessage(
+                        icon: Icons.explore_off_outlined,
+                        title: l.feedEmptyTitle,
+                        subtitle: l.feedEmptyBody,
+                        action: FilledButton.icon(
+                          onPressed: () => context.push(Routes.create),
+                          icon: const Icon(Icons.add),
+                          label: Text(l.createOne),
+                        ),
                       ),
-                    ),
+                    );
+                  }
+                  return SliverList.builder(
+                    itemCount: challenges.length,
+                    itemBuilder: (_, i) =>
+                        ChallengeCard(challenge: challenges[i]),
                   );
-                }
-                return SliverList.builder(
-                  itemCount: challenges.length,
-                  itemBuilder: (_, i) =>
-                      ChallengeCard(challenge: challenges[i]),
-                );
-              },
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
+                },
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            ],
+          ),
         ),
       ),
     );

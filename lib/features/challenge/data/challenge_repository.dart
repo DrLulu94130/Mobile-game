@@ -132,8 +132,19 @@ class ChallengeRepository {
 
   Future<void> delete(String id) => _col.doc(id).delete();
 
+  /// Flags a drawing for moderation. Once [AppConstants.reportHideThreshold]
+  /// reports accumulate the drawing drops out of the feeds (client-side).
+  Future<void> report(String id) {
+    return _col.doc(id).update({'reportCount': FieldValue.increment(1)});
+  }
+
+  /// Maps documents and hides those the community has flagged past the
+  /// moderation threshold, so reported content disappears from every feed.
   List<Challenge> _mapDocs(QuerySnapshot<Map<String, dynamic>> snap) =>
-      snap.docs.map((d) => Challenge.fromJson(d.id, d.data())).toList();
+      snap.docs
+          .map((d) => Challenge.fromJson(d.id, d.data()))
+          .where((c) => c.reportCount < AppConstants.reportHideThreshold)
+          .toList();
 
   String _dayKey(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
@@ -150,10 +161,16 @@ final challengeRepositoryProvider = Provider<ChallengeRepository>(
   (ref) => ChallengeRepository(ref.watch(firestoreProvider)),
 );
 
-/// Feed stream provider consumed by the community screen.
-final feedProvider = StreamProvider.autoDispose<List<Challenge>>(
-  (ref) => ref.watch(challengeRepositoryProvider).watchFeed(),
-);
+/// How many drawings the feed currently requests. Grows as the player scrolls
+/// (see [feedProvider]); reset when the feed screen is disposed.
+final feedLimitProvider = StateProvider.autoDispose<int>((ref) => 20);
+
+/// Feed stream provider consumed by the community screen. Re-subscribes with a
+/// larger window whenever [feedLimitProvider] grows.
+final feedProvider = StreamProvider.autoDispose<List<Challenge>>((ref) {
+  final limit = ref.watch(feedLimitProvider);
+  return ref.watch(challengeRepositoryProvider).watchFeed(limit: limit);
+});
 
 final trendingProvider = StreamProvider.autoDispose<List<Challenge>>(
   (ref) => ref.watch(challengeRepositoryProvider).watchTrending(),

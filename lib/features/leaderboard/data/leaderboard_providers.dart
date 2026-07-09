@@ -26,3 +26,14 @@ final popularCreatorsProvider =
       .snapshots()
       .map((s) => s.docs.map((d) => AppUser.fromJson(d.id, d.data())).toList());
 });
+
+/// A single creator's public profile, streamed by uid.
+final userByIdProvider =
+    StreamProvider.autoDispose.family<AppUser?, String>((ref, uid) {
+  final firestore = ref.watch(firestoreProvider);
+  return firestore
+      .collection(AppConstants.usersCollection)
+      .doc(uid)
+      .snapshots()
+      .map((d) => d.exists ? AppUser.fromJson(d.id, d.data()!) : null);
+});

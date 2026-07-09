@@ -27,6 +27,11 @@ the clock.
 | **Discover** | TikTok-style vertical scroll of everyone's drawings: 10 seconds to find every Inkling; wins/losses feed each drawing's note |
 | **Tokens** | Scrolling Discover earns tokens (+1 per drawing, +2 per win); publishing a drawing costs 15 tokens (free for Premium) |
 | **Ratings** | Every drawing gets a note out of 5 — the share of seekers it fooled — shown on feed cards and ranked in a dedicated leaderboard tab |
+| **Masterpiece canvases** | Start a drawing from a famous painting (Starry Night, The Great Wave, Water Lilies, The Scream, …), hand-painted procedurally in-app — no bundled images |
+| **Discover combos** | Win streaks multiply token rewards; the featured daily drawing leads the feed and pays double; the clock scales with creature count and gives Premium a bonus |
+| **Rewarded ads** | Watch an ad for bonus tokens when short of publishing funds |
+| **Moderation** | Report drawings; community-flagged content is hidden past a threshold. Creators earn tokens (server-side) each time their drawing fools a seeker |
+| **Creator profiles** | Tap any author to see their public drawings, average note and stats |
 | **Community** | Feed, likes, comments, trending, daily challenges, popular creators |
 | **Progression** | XP, levels, achievements, badges, daily streaks |
 | **Packs** | Six original creature families; premium packs gated |

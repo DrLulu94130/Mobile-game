@@ -11,7 +11,7 @@
 
 import {initializeApp} from "firebase-admin/app";
 import {getFirestore, FieldValue} from "firebase-admin/firestore";
-import {onDocumentCreated, onDocumentDeleted} from
+import {onDocumentCreated, onDocumentDeleted, onDocumentUpdated} from
   "firebase-functions/v2/firestore";
 import {onRequest} from "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
@@ -19,6 +19,9 @@ import {logger} from "firebase-functions";
 
 initializeApp();
 const db = getFirestore();
+
+/** Tokens paid to a creator each time their drawing fools a seeker. */
+const CREATOR_FOOL_REWARD = 1;
 
 const APP_STORE_URL = "https://apps.apple.com/app/id0000000000";
 const PLAY_STORE_URL =
@@ -53,6 +56,32 @@ export const onChallengeDeleted = onDocumentDeleted(
         {merge: true},
       );
     }
+  },
+);
+
+/**
+ * Reward the creator when their drawing fools a seeker in Discover.
+ *
+ * This runs server-side (Admin SDK) so the reward is authoritative: a client
+ * cannot credit its own account, only trigger a legitimate seek outcome that
+ * the platform then pays out. Fires whenever `seekFailCount` increases.
+ */
+export const onChallengeFooledSeeker = onDocumentUpdated(
+  "challenges/{challengeId}",
+  async (event) => {
+    const before = event.data?.before.data();
+    const after = event.data?.after.data();
+    if (!before || !after) return;
+    const beforeFails = (before.seekFailCount as number) ?? 0;
+    const afterFails = (after.seekFailCount as number) ?? 0;
+    const delta = afterFails - beforeFails;
+    if (delta <= 0) return;
+    const authorId = after.authorId as string | undefined;
+    if (!authorId) return;
+    await db.doc(`users/${authorId}`).set(
+      {tokens: FieldValue.increment(delta * CREATOR_FOOL_REWARD)},
+      {merge: true},
+    );
   },
 );
 

@@ -889,6 +889,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{wins} found it · {fails} fooled'**
   String seekStats(int wins, int fails);
+
+  /// No description provided for @masterpiecesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Or start from a masterpiece'**
+  String get masterpiecesTitle;
+
+  /// No description provided for @masterpiecesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Famous paintings, hand-painted in-app — busy backgrounds make the best hiding spots.'**
+  String get masterpiecesSub;
+
+  /// No description provided for @masterpieceStarryNight.
+  ///
+  /// In en, this message translates to:
+  /// **'Starry Night'**
+  String get masterpieceStarryNight;
+
+  /// No description provided for @masterpieceGreatWave.
+  ///
+  /// In en, this message translates to:
+  /// **'The Great Wave'**
+  String get masterpieceGreatWave;
+
+  /// No description provided for @masterpieceWaterLilies.
+  ///
+  /// In en, this message translates to:
+  /// **'Water Lilies'**
+  String get masterpieceWaterLilies;
+
+  /// No description provided for @masterpieceScream.
+  ///
+  /// In en, this message translates to:
+  /// **'The Scream'**
+  String get masterpieceScream;
+
+  /// No description provided for @masterpieceGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour Grid'**
+  String get masterpieceGrid;
+
+  /// No description provided for @masterpieceGolden.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Garden'**
+  String get masterpieceGolden;
+
+  /// No description provided for @discoverDailyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily · double tokens'**
+  String get discoverDailyBadge;
+
+  /// No description provided for @discoverComboLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× combo'**
+  String discoverComboLabel(int count);
+
+  /// No description provided for @discoverTutorialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find the hidden creatures'**
+  String get discoverTutorialTitle;
+
+  /// No description provided for @discoverTutorialBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a few seconds per drawing. Tap the Inklings before time runs out. Every drawing earns tokens; winning earns more — and builds a combo!'**
+  String get discoverTutorialBody;
+
+  /// No description provided for @discoverTutorialCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get discoverTutorialCta;
+
+  /// No description provided for @dailyScrollCapReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily scroll bonus maxed out — keep playing to earn win tokens!'**
+  String get dailyScrollCapReached;
+
+  /// No description provided for @watchAdForTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch an ad (+{count} tokens)'**
+  String watchAdForTokens(int count);
+
+  /// No description provided for @adNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'No ad available right now, try again shortly.'**
+  String get adNotReady;
+
+  /// No description provided for @likeDrawing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice hide!'**
+  String get likeDrawing;
+
+  /// No description provided for @reportDrawing.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportDrawing;
+
+  /// No description provided for @reportSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks — we\'ll take a look.'**
+  String get reportSubmitted;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report this drawing'**
+  String get reportTitle;
+
+  /// No description provided for @reportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what\'s wrong so moderators can review it.'**
+  String get reportBody;
+
+  /// No description provided for @reportReasonInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
+  String get reportReasonInappropriate;
+
+  /// No description provided for @reportReasonImpossible.
+  ///
+  /// In en, this message translates to:
+  /// **'Impossible to solve'**
+  String get reportReasonImpossible;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or nonsense'**
+  String get reportReasonSpam;
+
+  /// No description provided for @creatorProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Creator'**
+  String get creatorProfile;
+
+  /// No description provided for @creatorDrawings.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 drawing} other{{count} drawings}}'**
+  String creatorDrawings(int count);
+
+  /// No description provided for @avgRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg note'**
+  String get avgRating;
+
+  /// No description provided for @followers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get followers;
 }
 
 class _AppLocalizationsDelegate

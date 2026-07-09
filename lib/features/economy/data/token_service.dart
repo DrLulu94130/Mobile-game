@@ -23,6 +23,37 @@ class TokenService {
     );
   }
 
+  /// Credits one scroll token, but only while the player is under the daily
+  /// scroll cap — swiping without playing can't bankroll unlimited posts.
+  /// Returns the amount actually credited (0 when the cap is reached).
+  Future<int> earnScrollToken(String uid, {DateTime? now}) async {
+    return _firestore.runTransaction((tx) async {
+      final ref = _userDoc(uid);
+      final snap = await tx.get(ref);
+      final data = snap.data() ?? {};
+      final today = _dayKey(now ?? DateTime.now());
+      final storedDay = data['scrollTokensDay'] as String?;
+      final usedToday = storedDay == today
+          ? (data['scrollTokensToday'] as num?)?.toInt() ?? 0
+          : 0;
+      if (usedToday >= AppConstants.maxDailyScrollTokens) return 0;
+      const amount = AppConstants.tokensPerDiscoverScroll;
+      tx.set(
+        ref,
+        {
+          'tokens': FieldValue.increment(amount),
+          'scrollTokensDay': today,
+          'scrollTokensToday': usedToday + amount,
+        },
+        SetOptions(merge: true),
+      );
+      return amount;
+    });
+  }
+
+  static String _dayKey(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
   /// Debits [amount] tokens transactionally. Returns `false` (and leaves the
   /// balance untouched) when the user cannot afford it.
   Future<bool> trySpend(String uid, int amount) async {

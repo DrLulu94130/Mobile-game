@@ -25,9 +25,16 @@ abstract class AdUnits {
   static const String _iosInterstitialTest =
       'ca-app-pub-3940256099942544/4411468910';
 
+  static const String _androidRewardedTest =
+      'ca-app-pub-3940256099942544/5224354917';
+  static const String _iosRewardedTest =
+      'ca-app-pub-3940256099942544/1712485313';
+
   static const String _bannerOverride = String.fromEnvironment('ADMOB_BANNER');
   static const String _interstitialOverride =
       String.fromEnvironment('ADMOB_INTERSTITIAL');
+  static const String _rewardedOverride =
+      String.fromEnvironment('ADMOB_REWARDED');
 
   static String get banner {
     if (_bannerOverride.isNotEmpty) return _bannerOverride;
@@ -37,6 +44,11 @@ abstract class AdUnits {
   static String get interstitial {
     if (_interstitialOverride.isNotEmpty) return _interstitialOverride;
     return _isAndroid ? _androidInterstitialTest : _iosInterstitialTest;
+  }
+
+  static String get rewarded {
+    if (_rewardedOverride.isNotEmpty) return _rewardedOverride;
+    return _isAndroid ? _androidRewardedTest : _iosRewardedTest;
   }
 }
 
@@ -49,6 +61,7 @@ class AdService {
 
   bool _initialised = false;
   InterstitialAd? _interstitial;
+  RewardedAd? _rewarded;
   int _showsSincePublish = 0;
 
   Future<void> initialize() async {
@@ -57,9 +70,51 @@ class AdService {
       await MobileAds.instance.initialize();
       _initialised = true;
       _preloadInterstitial();
+      _preloadRewarded();
     } catch (_) {
       // Ads are non-essential; never block the app on init failure.
     }
+  }
+
+  void _preloadRewarded() {
+    if (!_initialised) return;
+    RewardedAd.load(
+      adUnitId: AdUnits.rewarded,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) => _rewarded = ad,
+        onAdFailedToLoad: (_) => _rewarded = null,
+      ),
+    );
+  }
+
+  /// Whether a rewarded ad is loaded and ready to show right now.
+  bool get isRewardedReady => _rewarded != null;
+
+  /// Shows a rewarded ad. Returns `true` only if the user earned the reward
+  /// (watched it through). Reloads the next ad afterwards.
+  Future<bool> showRewarded() async {
+    final ad = _rewarded;
+    if (ad == null) {
+      _preloadRewarded();
+      return false;
+    }
+    _rewarded = null;
+    var earned = false;
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _preloadRewarded();
+      },
+      onAdFailedToShowFullScreenContent: (ad, _) {
+        ad.dispose();
+        _preloadRewarded();
+      },
+    );
+    await ad.show(
+      onUserEarnedReward: (_, __) => earned = true,
+    );
+    return earned;
   }
 
   void _preloadInterstitial() {
@@ -109,6 +164,8 @@ class AdService {
   void dispose() {
     _interstitial?.dispose();
     _interstitial = null;
+    _rewarded?.dispose();
+    _rewarded = null;
   }
 }
 
