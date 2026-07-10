@@ -68,3 +68,7 @@ flutter:
     - assets/images/
     - assets/packs/
     - assets/models/
+  fonts:
+    - family: LuckiestGuy
+      fonts:
+        - asset: assets/fonts/LuckiestGuy-Regular.ttf

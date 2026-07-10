@@ -18,6 +18,7 @@ import '../../features/premium/presentation/screens/premium_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/progression/presentation/screens/badges_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../shared/widgets/home_shell.dart';
 import 'routes.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
@@ -61,29 +62,53 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const OnboardingScreen(startOnSignIn: true),
       ),
 
-      // The game main menu and its secondary screens.
-      GoRoute(
-        path: Routes.home,
-        builder: (_, __) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: Routes.feed,
-        builder: (_, __) => const FeedScreen(),
-      ),
-      GoRoute(
-        path: Routes.daily,
-        builder: (_, __) => const DailyScreen(),
-      ),
-      GoRoute(
-        path: Routes.leaderboard,
-        builder: (_, __) => const LeaderboardScreen(),
-      ),
-      GoRoute(
-        path: Routes.profile,
-        builder: (_, __) => const ProfileScreen(),
+      // The game shell: a persistent bottom navigation bar hosts the four main
+      // destinations (Play, Feed, Ranks, Profile) plus a central "create"
+      // action. Each destination keeps its own navigation state.
+      StatefulShellRoute.indexedStack(
+        builder: (_, __, navigationShell) => HomeShell(shell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.home,
+                builder: (_, __) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.feed,
+                builder: (_, __) => const FeedScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.leaderboard,
+                builder: (_, __) => const LeaderboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.profile,
+                builder: (_, __) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
 
       // Full-screen flows pushed above the shell.
+      GoRoute(
+        path: Routes.daily,
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const DailyScreen(),
+      ),
       GoRoute(
         path: Routes.create,
         parentNavigatorKey: _rootKey,
