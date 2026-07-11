@@ -7,16 +7,13 @@ import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../challenge/data/challenge_repository.dart';
 import '../../../challenge/domain/entities/challenge.dart';
-import '../../../progression/data/progression_service.dart';
 import '../../../../shared/widgets/app_widgets.dart';
-import '../../data/attempt_repository.dart';
+import '../../data/play_result_service.dart';
 import '../../domain/detection_engine.dart';
-import '../../domain/entities/attempt.dart';
 import '../widgets/found_markers.dart';
 import '../widgets/result_overlay.dart';
 
@@ -59,12 +56,17 @@ class _PlayViewState extends ConsumerState<_PlayView> {
   Timer? _ticker;
   Offset? _lastMiss;
   bool _finished = false;
+  bool _playCounted = false;
 
   @override
   void initState() {
     super.initState();
     _session = PlaySession(inklings: widget.challenge.inklings);
-    ref.read(challengeRepositoryProvider).incrementPlayCount(widget.challenge.id);
+    _startTicker();
+  }
+
+  void _startTicker() {
+    _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && !_finished) setState(() {});
     });
@@ -78,6 +80,16 @@ class _PlayViewState extends ConsumerState<_PlayView> {
 
   void _onTap(Offset normalised) {
     if (_finished) return;
+    // A play only counts once the player actually engages — counting on
+    // screen open would let idle visits inflate the trending ranking.
+    if (!_playCounted) {
+      _playCounted = true;
+      unawaited(
+        ref
+            .read(challengeRepositoryProvider)
+            .incrementPlayCount(widget.challenge.id),
+      );
+    }
     final result = _session.tap(normalised);
     setState(() {
       _lastMiss = result.hit ? null : normalised;
@@ -90,40 +102,28 @@ class _PlayViewState extends ConsumerState<_PlayView> {
     }
   }
 
+  void _replay() {
+    setState(() {
+      _finished = false;
+      _lastMiss = null;
+      _session.reset();
+    });
+    _startTicker();
+  }
+
   Future<void> _finish() async {
     if (_finished) return;
     _finished = true;
     _ticker?.cancel();
 
-    final score = _session.computeScore();
+    // The server re-runs detection and owns scoring, best times and
+    // progression; the overlay below still renders the local session
+    // immediately without waiting for the round trip.
     final user = ref.read(authRepositoryProvider).currentUser;
-
     if (user != null) {
-      final attempt = Attempt(
-        id: '',
-        challengeId: widget.challenge.id,
-        playerId: user.uid,
-        foundCount: _session.foundCount,
-        totalInklings: _session.total,
-        durationMs: _session.elapsed.inMilliseconds,
-        score: score,
-        taps: _session.taps,
-        createdAt: DateTime.now(),
-      );
-      await ref.read(attemptRepositoryProvider).save(attempt);
-      await ref.read(challengeRepositoryProvider).recordBestTime(
-            widget.challenge.id,
-            _session.elapsed.inMilliseconds,
-          );
-      // Award XP for solving.
-      final xp = AppConstants.xpPerChallengeSolved +
-          _session.foundCount * AppConstants.xpPerInklingFound;
-      await ref.read(progressionServiceProvider).awardXp(
-            uid: user.uid,
-            xpDelta: xp,
-            challengesSolvedDelta: 1,
-            perfectSolvesDelta: _session.isComplete ? 1 : 0,
-          );
+      await ref
+          .read(playResultServiceProvider)
+          .submit(challengeId: widget.challenge.id, session: _session);
     }
 
     if (mounted) setState(() {});
@@ -141,7 +141,10 @@ class _PlayViewState extends ConsumerState<_PlayView> {
               aspectRatio: widget.challenge.canvasAspectRatio,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final size = Size(constraints.maxWidth, constraints.maxHeight);
+                  final size = Size(
+                    constraints.maxWidth,
+                    constraints.maxHeight,
+                  );
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTapUp: (d) => _onTap(
@@ -192,10 +195,7 @@ class _PlayViewState extends ConsumerState<_PlayView> {
                   icon: Icons.search,
                   text: '${_session.foundCount}/${_session.total}',
                 ),
-                _HudPill(
-                  icon: Icons.timer_outlined,
-                  text: _format(elapsed),
-                ),
+                _HudPill(icon: Icons.timer_outlined, text: _format(elapsed)),
               ],
             ),
           ),
@@ -208,13 +208,7 @@ class _PlayViewState extends ConsumerState<_PlayView> {
               durationMs: _session.elapsed.inMilliseconds,
               score: _session.computeScore(),
               revealUrl: widget.challenge.revealedImageUrl,
-              onReplay: () {
-                setState(() {
-                  _finished = false;
-                  _session.found.clear();
-                  _session.taps.clear();
-                });
-              },
+              onReplay: _replay,
               onDone: () => context.pop(),
             ),
 

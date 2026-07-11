@@ -51,6 +51,31 @@ class AppLocalizationsFr extends AppLocalizations {
       'Partage l\'énigme. Ils touchent l\'écran pour trouver ce que tu as caché — contre la montre.';
 
   @override
+  String get tutorialSkip => 'Passer';
+
+  @override
+  String get tutorialTitle => 'Deux Inklings se cachent ici';
+
+  @override
+  String get tutorialFindBody => 'Tape dessus pour les attraper !';
+
+  @override
+  String get tutorialOneLeft => 'Bien vu ! Encore un…';
+
+  @override
+  String get tutorialDoneTitle => 'Tu as tout compris !';
+
+  @override
+  String get tutorialDoneBody =>
+      'Les joueurs peignent leurs Inklings avec les couleurs de la scène jusqu\'à les faire disparaître. À toi de jouer.';
+
+  @override
+  String get tutorialCreateCta => 'Cache ton premier Inkling';
+
+  @override
+  String get tutorialExploreCta => 'Explorer les défis';
+
+  @override
   String get welcomeBack => 'Bon retour';
 
   @override

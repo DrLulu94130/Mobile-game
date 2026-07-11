@@ -100,8 +100,10 @@ abstract class AppTheme {
           borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
       chipTheme: ChipThemeData(
         shape: RoundedRectangleBorder(

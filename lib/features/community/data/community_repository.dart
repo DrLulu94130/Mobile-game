@@ -25,9 +25,9 @@ class CommunityRepository {
 
   /// Toggles a like using a transaction so the denormalised count stays exact.
   Future<void> toggleLike(String challengeId, String uid) async {
-    final likeRef = _challenge(challengeId)
-        .collection(AppConstants.likesCollection)
-        .doc(uid);
+    final likeRef = _challenge(
+      challengeId,
+    ).collection(AppConstants.likesCollection).doc(uid);
     await _firestore.runTransaction((tx) async {
       final challengeRef = _challenge(challengeId);
       final likeSnap = await tx.get(likeRef);
@@ -47,23 +47,23 @@ class CommunityRepository {
         .orderBy('createdAt', descending: true)
         .limit(100)
         .snapshots()
-        .map((s) =>
-            s.docs.map((d) => Comment.fromJson(d.id, d.data())).toList());
+        .map(
+          (s) => s.docs.map((d) => Comment.fromJson(d.id, d.data())).toList(),
+        );
   }
 
   Future<void> addComment(Comment comment) async {
-    final ref = _challenge(comment.challengeId)
-        .collection(AppConstants.commentsCollection)
-        .doc();
+    final ref = _challenge(
+      comment.challengeId,
+    ).collection(AppConstants.commentsCollection).doc();
     await _firestore.runTransaction((tx) async {
       tx.set(ref, {
         ...comment.toJson(),
         'createdAt': FieldValue.serverTimestamp(),
       });
-      tx.update(
-        _challenge(comment.challengeId),
-        {'commentCount': FieldValue.increment(1)},
-      );
+      tx.update(_challenge(comment.challengeId), {
+        'commentCount': FieldValue.increment(1),
+      });
     });
   }
 }

@@ -45,16 +45,16 @@ class HomeShell extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _NavItem(
-              icon: Icons.explore_outlined,
-              activeIcon: Icons.explore,
-              label: l.navFeed,
+              icon: Icons.home_outlined,
+              activeIcon: Icons.home_rounded,
+              label: l.play,
               selected: shell.currentIndex == 0,
               onTap: () => _goBranch(0),
             ),
             _NavItem(
-              icon: Icons.today_outlined,
-              activeIcon: Icons.today,
-              label: l.navDaily,
+              icon: Icons.explore_outlined,
+              activeIcon: Icons.explore,
+              label: l.navFeed,
               selected: shell.currentIndex == 1,
               onTap: () => _goBranch(1),
             ),

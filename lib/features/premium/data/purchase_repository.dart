@@ -32,8 +32,7 @@ class PurchaseRepository {
   Future<bool> purchase(Package package) async {
     try {
       final result = await Purchases.purchasePackage(package);
-      return result.entitlements.active
-          .containsKey(Env.premiumEntitlement);
+      return result.entitlements.active.containsKey(Env.premiumEntitlement);
     } on PlatformException {
       rethrow;
     }

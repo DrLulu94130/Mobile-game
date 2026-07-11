@@ -62,8 +62,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
         actions: [
           TextButton(
             onPressed: () async {
-              final ok =
-                  await ref.read(purchaseRepositoryProvider).restore();
+              final ok = await ref.read(purchaseRepositoryProvider).restore();
               if (mounted && ok) ref.invalidate(isPremiumProvider);
             },
             child: Text(l.restore),
@@ -81,8 +80,11 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
             ),
             child: Column(
               children: [
-                const Icon(Icons.workspace_premium,
-                    color: AppColors.glow, size: 48),
+                const Icon(
+                  Icons.workspace_premium,
+                  color: AppColors.glow,
+                  size: 48,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   l.unlockEverything,
@@ -106,8 +108,10 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                 backgroundColor: AppColors.ink.withValues(alpha: 0.15),
                 child: Icon(icon, color: AppColors.ink),
               ),
-              title: Text(title,
-                  style: const TextStyle(fontWeight: FontWeight.w700)),
+              title: Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
               subtitle: Text(sub),
             ),
           const SizedBox(height: 12),
@@ -156,9 +160,7 @@ class _FallbackCta extends StatelessWidget {
       loading: busy,
       onPressed: () {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Store not configured in this build.'),
-          ),
+          const SnackBar(content: Text('Store not configured in this build.')),
         );
       },
     );

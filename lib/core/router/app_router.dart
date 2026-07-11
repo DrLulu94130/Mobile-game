@@ -10,14 +10,17 @@ import '../../features/editor/presentation/screens/create_screen.dart';
 import '../../features/editor/presentation/screens/editor_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/leaderboard/presentation/screens/leaderboard_screen.dart';
+import '../../features/onboarding/data/first_run_service.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/onboarding/presentation/screens/splash_screen.dart';
+import '../../features/onboarding/presentation/screens/tutorial_screen.dart';
 import '../../features/packs/presentation/screens/packs_screen.dart';
 import '../../features/play/presentation/screens/play_screen.dart';
 import '../../features/premium/presentation/screens/premium_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/progression/presentation/screens/badges_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../shared/widgets/home_shell.dart';
 import 'routes.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
@@ -38,9 +41,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       final entryRoutes = {Routes.splash, Routes.onboarding, Routes.signIn};
 
-      // Signed in: any entry route funnels straight into the game.
+      // Signed in: entry routes funnel into the game — through the playable
+      // tutorial on first launch. Hold the splash until the stored
+      // tutorial flag has been read.
       if (loggedIn) {
-        return entryRoutes.contains(loc) ? Routes.home : null;
+        if (!entryRoutes.contains(loc)) return null;
+        final tutorialDone = ref.read(tutorialDoneProvider).valueOrNull;
+        if (tutorialDone == null) {
+          return loc == Routes.splash ? null : Routes.splash;
+        }
+        return tutorialDone ? Routes.home : Routes.tutorial;
       }
 
       // Signed out: hold on the splash — it signs the player in anonymously
@@ -48,10 +58,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return loc == Routes.splash ? null : Routes.splash;
     },
     routes: [
-      GoRoute(
-        path: Routes.splash,
-        builder: (_, __) => const SplashScreen(),
-      ),
+      GoRoute(path: Routes.splash, builder: (_, __) => const SplashScreen()),
       GoRoute(
         path: Routes.onboarding,
         builder: (_, __) => const OnboardingScreen(),
@@ -60,30 +67,58 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Routes.signIn,
         builder: (_, __) => const OnboardingScreen(startOnSignIn: true),
       ),
+      GoRoute(
+        path: Routes.tutorial,
+        builder: (_, __) => const TutorialScreen(),
+      ),
 
-      // The game main menu and its secondary screens.
-      GoRoute(
-        path: Routes.home,
-        builder: (_, __) => const HomeScreen(),
-      ),
-      GoRoute(
-        path: Routes.feed,
-        builder: (_, __) => const FeedScreen(),
-      ),
-      GoRoute(
-        path: Routes.daily,
-        builder: (_, __) => const DailyScreen(),
-      ),
-      GoRoute(
-        path: Routes.leaderboard,
-        builder: (_, __) => const LeaderboardScreen(),
-      ),
-      GoRoute(
-        path: Routes.profile,
-        builder: (_, __) => const ProfileScreen(),
+      // The game shell: a persistent bottom navigation bar hosts the four main
+      // destinations (Play, Feed, Ranks, Profile) plus a central "create"
+      // action. Each destination keeps its own navigation state.
+      StatefulShellRoute.indexedStack(
+        builder: (_, __, navigationShell) => HomeShell(shell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.home,
+                builder: (_, __) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.feed,
+                builder: (_, __) => const FeedScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.leaderboard,
+                builder: (_, __) => const LeaderboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.profile,
+                builder: (_, __) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
 
       // Full-screen flows pushed above the shell.
+      GoRoute(
+        path: Routes.daily,
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const DailyScreen(),
+      ),
       GoRoute(
         path: Routes.create,
         parentNavigatorKey: _rootKey,
@@ -128,15 +163,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const BadgesScreen(),
       ),
     ],
-    errorBuilder: (_, state) => Scaffold(
-      body: Center(child: Text('Route not found: ${state.uri}')),
-    ),
+    errorBuilder: (_, state) =>
+        Scaffold(body: Center(child: Text('Route not found: ${state.uri}'))),
   );
 });
 
-/// Bridges Riverpod's auth state to GoRouter's [Listenable] refresh contract.
+/// Bridges Riverpod's auth and first-run state to GoRouter's [Listenable]
+/// refresh contract so redirects re-evaluate when either resolves.
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Ref ref) {
     ref.listen(currentUserProvider, (_, __) => notifyListeners());
+    ref.listen(tutorialDoneProvider, (_, __) => notifyListeners());
   }
 }

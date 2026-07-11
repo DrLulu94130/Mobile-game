@@ -106,9 +106,6 @@ class AppUser {
     );
   }
 
-  static AppUser guest() => const AppUser(
-        uid: '',
-        displayName: 'Guest',
-        isAnonymous: true,
-      );
+  static AppUser guest() =>
+      const AppUser(uid: '', displayName: 'Guest', isAnonymous: true);
 }

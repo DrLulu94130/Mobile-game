@@ -31,7 +31,11 @@ class ShareSheet extends ConsumerWidget {
     (ShareTarget.copyLink, Icons.link, AppColors.ink),
   ];
 
-  Future<void> _share(BuildContext context, WidgetRef ref, ShareTarget t) async {
+  Future<void> _share(
+    BuildContext context,
+    WidgetRef ref,
+    ShareTarget t,
+  ) async {
     await ref.read(shareServiceProvider).share(
           target: t,
           camouflagedImage: camouflagedBytes,
@@ -65,10 +69,9 @@ class ShareSheet extends ConsumerWidget {
             const SizedBox(height: 16),
             Text(
               l.challengePublished,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 4),
             Text(l.shareSubtitle),

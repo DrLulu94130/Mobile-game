@@ -38,9 +38,8 @@ class Comment {
       authorName: json['authorName'] as String? ?? 'Player',
       authorAvatarUrl: json['authorAvatarUrl'] as String?,
       text: json['text'] as String? ?? '',
-      createdAt:
-          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.now(),
+      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
     );
   }

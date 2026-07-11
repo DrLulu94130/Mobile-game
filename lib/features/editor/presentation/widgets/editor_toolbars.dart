@@ -35,8 +35,7 @@ class EditorToolbars extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Contextual panel above the tool row.
-          if (state.tool == EditorTool.brush ||
-              state.tool == EditorTool.eraser)
+          if (state.tool == EditorTool.brush || state.tool == EditorTool.eraser)
             _BrushPanel(
               state: state,
               controller: controller,
@@ -45,12 +44,16 @@ class EditorToolbars extends StatelessWidget {
             ),
           const SizedBox(height: 10),
           // Creature size slider (move tool + selection).
-          if (hasSelection && state.tool == EditorTool.move &&
+          if (hasSelection &&
+              state.tool == EditorTool.move &&
               !state.zoomEnabled)
             Row(
               children: [
-                const Icon(Icons.photo_size_select_small,
-                    color: Colors.white70, size: 18),
+                const Icon(
+                  Icons.photo_size_select_small,
+                  color: Colors.white70,
+                  size: 18,
+                ),
                 Expanded(
                   child: Slider(
                     value: state.selected!.size.clamp(0.05, 0.9),
@@ -60,8 +63,11 @@ class EditorToolbars extends StatelessWidget {
                     onChangeEnd: (_) => controller.endTransform(),
                   ),
                 ),
-                const Icon(Icons.photo_size_select_large,
-                    color: Colors.white70, size: 22),
+                const Icon(
+                  Icons.photo_size_select_large,
+                  color: Colors.white70,
+                  size: 22,
+                ),
               ],
             ),
           // Object actions (only when an Inkling is selected).
@@ -116,7 +122,8 @@ class EditorToolbars extends StatelessWidget {
                 onTap: () => controller.setTool(EditorTool.eraser),
               ),
               _ToolButton(
-                icon: state.zoomEnabled ? Icons.zoom_in : Icons.zoom_in_outlined,
+                icon:
+                    state.zoomEnabled ? Icons.zoom_in : Icons.zoom_in_outlined,
                 label: l.toolZoom,
                 active: state.zoomEnabled,
                 onTap: controller.toggleZoom,
@@ -175,7 +182,7 @@ class _BrushPanel extends StatelessWidget {
               for (final c in _palette) ...[
                 _Swatch(
                   color: c,
-                  selected: state.brushColor.value == c.value,
+                  selected: state.brushColor.toARGB32() == c.toARGB32(),
                   onTap: () => controller.setBrushColor(c),
                 ),
                 const SizedBox(width: 8),
@@ -346,4 +353,3 @@ class _ActionChip extends StatelessWidget {
     );
   }
 }
-

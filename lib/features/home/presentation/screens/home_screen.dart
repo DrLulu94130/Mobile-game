@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:inkognito/l10n/app_localizations.dart';
 
-import '../../../../core/ads/banner_ad_widget.dart';
 import '../../../../core/router/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/app_logo_title.dart';
 import '../../../../shared/widgets/juicy_button.dart';
 import '../../../../shared/widgets/mascot_3d.dart';
 
-/// The game's main menu: the live 3D character front and centre, one glowing
-/// "hide" CTA and one "seek" CTA. No tabs, no app chrome — arcade first.
+/// The game's "Play" tab: the live 3D character front and centre, a glowing
+/// "hide" CTA, a "seek" CTA and a quick link to the daily challenges. The
+/// persistent bottom navigation lives in the surrounding [HomeShell].
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -38,35 +38,12 @@ class HomeScreen extends StatelessWidget {
                       icon: Icons.workspace_premium_rounded,
                       onTap: () => context.push(Routes.premium),
                     ),
-                    const SizedBox(width: 8),
-                    _RoundIcon(
-                      icon: Icons.person_rounded,
-                      onTap: () => context.push(Routes.profile),
-                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                'INKOGNITO',
-                style: GoogleFonts.luckiestGuy(
-                  color: Colors.white,
-                  fontSize: 46,
-                  letterSpacing: 3,
-                  shadows: [
-                    const Shadow(
-                      color: Color(0xFF2B1B7E),
-                      offset: Offset(0, 5),
-                      blurRadius: 0,
-                    ),
-                    Shadow(
-                      color: AppColors.splash.withValues(alpha: 0.55),
-                      offset: const Offset(0, 10),
-                      blurRadius: 24,
-                    ),
-                  ],
-                ),
-              ),
+              const AppLogoTitle(fontSize: 46, letterSpacing: 3),
+              const SizedBox(height: 4),
               Text(
                 l.homeTagline,
                 style: TextStyle(
@@ -102,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                 child: Column(
                   children: [
                     JuicyButton.primary(
@@ -116,13 +93,28 @@ class HomeScreen extends StatelessWidget {
                       title: l.homeSeekCta,
                       subtitle: l.homeSeekSub,
                       icon: Icons.search_rounded,
-                      onPressed: () => context.push(Routes.feed),
+                      // Switch to the Feed tab inside the shell.
+                      onPressed: () => context.go(Routes.feed),
+                    ),
+                    const SizedBox(height: 6),
+                    TextButton.icon(
+                      onPressed: () => context.push(Routes.daily),
+                      icon: const Icon(
+                        Icons.today_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        l.daily,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              // Free-tier banner (renders nothing for Premium users).
-              const BannerAdWidget(),
             ],
           ),
         ),

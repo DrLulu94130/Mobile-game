@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../editor/domain/entities/inkling_species.dart';
+import '../../../../shared/widgets/app_logo_title.dart';
 import '../../../../shared/widgets/inkling_avatar.dart';
 
 /// Branded splash shown while the auth state resolves.
@@ -51,21 +51,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   .then()
                   .scaleXY(begin: 1, end: 1.03, duration: 900.ms),
               const SizedBox(height: 24),
-              Text(
-                'INKOGNITO',
-                style: GoogleFonts.luckiestGuy(
-                  color: Colors.white,
-                  fontSize: 36,
-                  letterSpacing: 2,
-                  shadows: const [
-                    Shadow(
-                      color: Color(0xFF2B1B7E),
-                      offset: Offset(0, 4),
-                      blurRadius: 0,
-                    ),
-                  ],
-                ),
-              ),
+              const AppLogoTitle(fontSize: 40, letterSpacing: 2),
               const SizedBox(height: 8),
               Text(
                 'Hide. Camouflage. Challenge.',

@@ -110,8 +110,7 @@ class Challenge {
       inklings: (json['inklings'] as List? ?? [])
           .map((e) => PlacedInkling.fromJson(e as Map<String, dynamic>))
           .toList(),
-      canvasAspectRatio:
-          (json['canvasAspectRatio'] as num?)?.toDouble() ?? 1.0,
+      canvasAspectRatio: (json['canvasAspectRatio'] as num?)?.toDouble() ?? 1.0,
       createdAt: _parseDate(json['createdAt']),
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,

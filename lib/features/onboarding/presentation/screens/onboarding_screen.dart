@@ -123,19 +123,17 @@ class _Slide extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w900),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 12),
           Text(
             body,
             textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                ?.copyWith(color: AppColors.textMuted),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: AppColors.textMuted),
           ),
         ],
       ),
@@ -257,11 +255,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
     if (!_formKey.currentState!.validate()) return;
     final controller = ref.read(authControllerProvider.notifier);
     if (_register) {
-      await controller.register(
-        _email.text,
-        _password.text,
-        _name.text.trim(),
-      );
+      await controller.register(_email.text, _password.text, _name.text.trim());
     } else {
       await controller.signIn(_email.text, _password.text);
     }
@@ -275,9 +269,9 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
 
     ref.listen(authControllerProvider, (_, next) {
       if (next.hasError && !next.isLoading) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${(next.error as Object)}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${(next.error as Object)}')));
       }
     });
 
@@ -297,10 +291,9 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
             ),
             Text(
               _register ? l.createAccount : l.welcomeBack,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w900),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 24),
             if (_register)
@@ -313,9 +306,8 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
                     hintText: l.displayName,
                     prefixIcon: const Icon(Icons.person_outline),
                   ),
-                  validator: (v) => (v == null || v.trim().length < 2)
-                      ? l.enterName
-                      : null,
+                  validator: (v) =>
+                      (v == null || v.trim().length < 2) ? l.enterName : null,
                 ),
               ),
             TextFormField(
@@ -337,8 +329,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
                 hintText: l.password,
                 prefixIcon: const Icon(Icons.lock_outline),
               ),
-              validator: (v) =>
-                  (v == null || v.length < 6) ? l.minChars : null,
+              validator: (v) => (v == null || v.length < 6) ? l.minChars : null,
             ),
             const SizedBox(height: 24),
             GradientButton(
@@ -349,9 +340,7 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => setState(() => _register = !_register),
-              child: Text(
-                _register ? l.haveAccountSignIn : l.newHereCreate,
-              ),
+              child: Text(_register ? l.haveAccountSignIn : l.newHereCreate),
             ),
             Row(
               children: [

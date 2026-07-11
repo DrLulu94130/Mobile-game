@@ -51,6 +51,31 @@ class AppLocalizationsEn extends AppLocalizations {
       'Share the puzzle. They tap to find what you hid — against the clock.';
 
   @override
+  String get tutorialSkip => 'Skip';
+
+  @override
+  String get tutorialTitle => 'Two Inklings are hiding here';
+
+  @override
+  String get tutorialFindBody => 'Tap them to catch them!';
+
+  @override
+  String get tutorialOneLeft => 'Nice! One more…';
+
+  @override
+  String get tutorialDoneTitle => 'You\'ve got it!';
+
+  @override
+  String get tutorialDoneBody =>
+      'Players paint their Inklings with the scene\'s colours until they vanish. Your turn.';
+
+  @override
+  String get tutorialCreateCta => 'Hide your first Inkling';
+
+  @override
+  String get tutorialExploreCta => 'Explore challenges';
+
+  @override
   String get welcomeBack => 'Welcome back';
 
   @override

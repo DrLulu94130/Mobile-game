@@ -142,9 +142,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       return;
     }
     // Pose the 3D character first; the capture becomes the creature's body.
-    final spriteId = await Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (_) => const PoseBoothScreen()),
-    );
+    final spriteId = await Navigator.of(
+      context,
+    ).push<String>(MaterialPageRoute(builder: (_) => const PoseBoothScreen()));
     if (spriteId == null || !mounted) return;
     ref
         .read(editorControllerProvider.notifier)
@@ -164,10 +164,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             const SizedBox(height: 12),
             Text(
               l.inklingLimitTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w800),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             Text(
@@ -235,16 +234,15 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
           ),
         );
         // Free tier: an interstitial after publishing (frequency-capped).
-        if (!premium &&
-            ref.read(adServiceProvider).shouldShowAfterAction()) {
+        if (!premium && ref.read(adServiceProvider).shouldShowAfterAction()) {
           await ref.read(adServiceProvider).maybeShowInterstitial();
         }
       },
       failure: (f) async {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.publishFailed(f.message))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.publishFailed(f.message))));
       },
     );
   }
@@ -339,8 +337,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
               controller.setBrushColor(color);
               controller.setTool(EditorTool.brush);
             },
-            onSampleFromCanvas: () =>
-                controller.setTool(EditorTool.eyedropper),
+            onSampleFromCanvas: () => controller.setTool(EditorTool.eyedropper),
           ),
         ],
       ),

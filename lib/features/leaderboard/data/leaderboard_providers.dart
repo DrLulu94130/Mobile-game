@@ -16,7 +16,9 @@ final topPlayersProvider = StreamProvider.autoDispose<List<AppUser>>((ref) {
 });
 
 /// Popular creators ordered by follower count.
-final popularCreatorsProvider = StreamProvider.autoDispose<List<AppUser>>((ref) {
+final popularCreatorsProvider = StreamProvider.autoDispose<List<AppUser>>((
+  ref,
+) {
   final firestore = ref.watch(firestoreProvider);
   return firestore
       .collection(AppConstants.usersCollection)

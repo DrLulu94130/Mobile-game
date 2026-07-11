@@ -186,8 +186,10 @@ class _EditorCanvasState extends State<EditorCanvas> {
     final deltaPx = details.localFocalPoint - _gestureStartFocal!;
 
     if (_framingPhoto) {
-      final scale = (_basePhotoScale! * details.scale)
-          .clamp(PhotoFraming.minScale, PhotoFraming.maxScale);
+      final scale = (_basePhotoScale! * details.scale).clamp(
+        PhotoFraming.minScale,
+        PhotoFraming.maxScale,
+      );
       final pan = PhotoFraming.clampPan(
         _canvas,
         widget.photoAspect,
@@ -256,10 +258,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
     final c = math.cos(-inkling.rotation);
     final rx = v.dx * c - v.dy * s;
     final ry = v.dx * s + v.dy * c;
-    final local = Offset(
-      rx / rect.width + 0.5,
-      ry / rect.height + 0.5,
-    );
+    final local = Offset(rx / rect.width + 0.5, ry / rect.height + 0.5);
     if (local.dx < 0 || local.dx > 1 || local.dy < 0 || local.dy > 1) {
       return null;
     }

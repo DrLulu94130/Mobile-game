@@ -5,9 +5,10 @@ rules_version = '2';
 // Principles:
 //  * Anyone signed in can read public content and profiles.
 //  * Users may only write their own profile and their own authored content.
-//  * Denormalised counters (likeCount, playCount, commentCount, xp, …) are
-//    only mutated through Cloud Functions or constrained transactions, so the
-//    client is limited to incrementing them within safe bounds.
+//  * Progression fields (xp, level, counters) may only move by plausible
+//    per-action amounts, and social counters by a single step per write, so
+//    a tampered client cannot fabricate leaderboard positions in one shot.
+//    Cloud Functions (Admin SDK) bypass these rules for server-side awards.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -19,41 +20,88 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    // Only these fields changed, each by exactly +1 or -1.
-    function onlyCounterDelta(fields) {
-      return request.resource.data.diff(resource.data).affectedKeys()
-                 .hasOnly(fields);
+    // Numeric field of a document map, treating missing or null as 0.
+    function num0(data, field) {
+      return data.get(field, 0) == null ? 0 : data.get(field, 0);
+    }
+
+    function newN(field) {
+      return num0(request.resource.data, field);
+    }
+
+    function oldN(field) {
+      return num0(resource.data, field);
+    }
+
+    // The write moves `field` by a delta within [minDelta, maxDelta].
+    function deltaWithin(field, minDelta, maxDelta) {
+      return newN(field) - oldN(field) >= minDelta
+          && newN(field) - oldN(field) <= maxDelta;
     }
 
     // --- Users / profiles ---
     match /users/{uid} {
       allow read: if isSignedIn();
-      allow create: if isOwner(uid);
-      // Owners may update their own profile. Progression-sensitive fields are
-      // additionally written by Cloud Functions using the Admin SDK, which
-      // bypasses these rules.
-      allow update: if isOwner(uid);
+
+      // New profiles must start with zero progression.
+      allow create: if isOwner(uid)
+          && newN('xp') == 0
+          && newN('level') <= 1
+          && newN('challengesCreated') == 0
+          && newN('challengesSolved') == 0
+          && newN('perfectSolves') == 0
+          && newN('totalLikes') == 0
+          && newN('streakDays') <= 1;
+
+      // Owners may edit cosmetic profile fields only. Progression (xp,
+      // level, streak, counters, badges) and entitlements are written
+      // exclusively by Cloud Functions with the Admin SDK, which bypasses
+      // these rules — a tampered client cannot touch them at all.
+      allow update: if isOwner(uid)
+          && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['displayName', 'avatarUrl'])
+          && request.resource.data.get('displayName', '') is string
+          && request.resource.data.get('displayName', '').size() <= 40;
+
       allow delete: if false;
     }
 
     // --- Challenges ---
     match /challenges/{challengeId} {
+
+      // Social interactions from any signed-in player: like/unlike, one
+      // play, one comment per write. Best times are server-written by the
+      // submitAttempt Cloud Function only.
+      function isSocialBump() {
+        return request.resource.data.diff(resource.data).affectedKeys()
+                   .hasOnly(['likeCount', 'playCount', 'commentCount'])
+            && deltaWithin('likeCount', -1, 1)
+            && deltaWithin('playCount', 0, 1)
+            && deltaWithin('commentCount', 0, 1);
+      }
+
       allow read: if isSignedIn() &&
                      (resource.data.isPublic == true ||
                       isOwner(resource.data.authorId));
 
-      allow create: if isSignedIn() &&
-                       request.resource.data.authorId == request.auth.uid &&
-                       request.resource.data.title is string &&
-                       request.resource.data.title.size() <= 60 &&
-                       request.resource.data.inklings.size() <= 12;
+      // New challenges start with pristine social counters.
+      allow create: if isSignedIn()
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.title is string
+          && request.resource.data.title.size() <= 60
+          && request.resource.data.inklings.size() <= 12
+          && newN('likeCount') == 0
+          && newN('playCount') == 0
+          && newN('commentCount') == 0
+          && newN('bestTimeMs') == 0;
 
-      // Author can edit their own challenge; anyone signed in may bump the
-      // social counters by a single step (like/play/comment flows).
-      allow update: if isOwner(resource.data.authorId) ||
-                       (isSignedIn() &&
-                        onlyCounterDelta(['likeCount', 'playCount',
-                                          'commentCount', 'bestTimeMs']));
+      // Authors edit their own challenge but never its social counters;
+      // everyone else is limited to single-step counter bumps.
+      allow update: if (isOwner(resource.data.authorId)
+              && !request.resource.data.diff(resource.data).affectedKeys()
+                     .hasAny(['likeCount', 'playCount', 'commentCount',
+                              'bestTimeMs'])) ||
+          (isSignedIn() && isSocialBump());
 
       allow delete: if isOwner(resource.data.authorId);
 
@@ -76,11 +124,11 @@ service cloud.firestore {
     }
 
     // --- Attempts (play results) ---
+    // Written exclusively by the submitAttempt Cloud Function, which
+    // re-runs detection server-side; clients can only read them.
     match /attempts/{attemptId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() &&
-                       request.resource.data.playerId == request.auth.uid;
-      allow update, delete: if false;
+      allow create, update, delete: if false;
     }
   }
 }

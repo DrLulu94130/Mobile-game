@@ -22,10 +22,7 @@ class PacksScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           for (final species in InklingSpecies.values)
-            _PackRow(
-              species: species,
-              locked: species.premium && !premium,
-            ),
+            _PackRow(species: species, locked: species.premium && !premium),
         ],
       ),
     );

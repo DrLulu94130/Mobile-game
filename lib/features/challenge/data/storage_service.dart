@@ -21,10 +21,7 @@ class StorageService {
         ? AppConstants.challengeRevealPath(challengeId)
         : AppConstants.challengeImagePath(challengeId);
     final ref = _storage.ref(path);
-    await ref.putData(
-      bytes,
-      SettableMetadata(contentType: 'image/jpeg'),
-    );
+    await ref.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
     return ref.getDownloadURL();
   }
 

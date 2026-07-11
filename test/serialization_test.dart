@@ -15,7 +15,7 @@ void main() {
     );
     final restored = DrawStroke.fromJson(stroke.toJson());
     expect(restored.points, stroke.points);
-    expect(restored.color.value, stroke.color.value);
+    expect(restored.color.toARGB32(), stroke.color.toARGB32());
     expect(restored.width, closeTo(stroke.width, 1e-9));
     expect(restored.isEraser, isTrue);
   });

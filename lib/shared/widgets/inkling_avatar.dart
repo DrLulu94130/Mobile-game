@@ -7,11 +7,7 @@ import '../../features/editor/presentation/painters/inkling_painter.dart';
 /// A small, static preview of an Inkling of a given [species]. Used in pack
 /// pickers, onboarding and empty states.
 class InklingAvatar extends StatelessWidget {
-  const InklingAvatar({
-    required this.species,
-    this.size = 64,
-    super.key,
-  });
+  const InklingAvatar({required this.species, this.size = 64, super.key});
 
   final InklingSpecies species;
   final double size;
@@ -29,9 +25,7 @@ class InklingAvatar extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(
-        painter: InklingPainter(inkling: inkling),
-      ),
+      child: CustomPaint(painter: InklingPainter(inkling: inkling)),
     );
   }
 }

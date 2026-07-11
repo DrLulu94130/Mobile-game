@@ -4,6 +4,9 @@ abstract class Routes {
   static const String onboarding = '/onboarding';
   static const String signIn = '/sign-in';
 
+  /// First-run playable tutorial.
+  static const String tutorial = '/welcome';
+
   /// The game main menu.
   static const String home = '/home';
 

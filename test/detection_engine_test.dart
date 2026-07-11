@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:inkognito/core/constants/app_constants.dart';
 import 'package:inkognito/features/editor/domain/entities/inkling_species.dart';
 import 'package:inkognito/features/editor/domain/entities/placed_inkling.dart';
 import 'package:inkognito/features/play/domain/detection_engine.dart';
@@ -89,6 +89,89 @@ void main() {
         ..tap(const Offset(0.5, 0.5))
         ..tap(const Offset(0.5, 0.5));
       expect(session.foundCount, 1);
+    });
+  });
+
+  group('PlaySession XP', () {
+    final inklings = [
+      _inkling('a', const Offset(0.2, 0.2)),
+      _inkling('b', const Offset(0.8, 0.8)),
+    ];
+
+    test('giving up without finding anything earns no XP', () {
+      final session = PlaySession(inklings: inklings);
+      expect(session.computeXp(firstAttempt: true), 0);
+    });
+
+    test('partial finds pay per Inkling but no solve bonus', () {
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.2, 0.2));
+      final xp = session.computeXp(firstAttempt: true);
+      expect(xp, AppConstants.xpPerInklingFound);
+    });
+
+    test('a complete solve earns the solve bonus on top of finds', () {
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.2, 0.2))
+        ..tap(const Offset(0.8, 0.8));
+      expect(
+        session.computeXp(firstAttempt: true),
+        2 * AppConstants.xpPerInklingFound + AppConstants.xpPerChallengeSolved,
+      );
+    });
+
+    test('repeat attempts earn nothing, even when complete', () {
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.2, 0.2))
+        ..tap(const Offset(0.8, 0.8));
+      expect(session.isComplete, isTrue);
+      expect(session.computeXp(firstAttempt: false), 0);
+    });
+  });
+
+  group('PlaySession flawless runs', () {
+    final inklings = [
+      _inkling('a', const Offset(0.2, 0.2)),
+      _inkling('b', const Offset(0.8, 0.8)),
+    ];
+
+    test('complete without a single miss is flawless', () {
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.2, 0.2))
+        ..tap(const Offset(0.8, 0.8));
+      expect(session.isFlawless, isTrue);
+    });
+
+    test('a wasted tap forfeits the flawless run', () {
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.5, 0.5)) // miss
+        ..tap(const Offset(0.2, 0.2))
+        ..tap(const Offset(0.8, 0.8));
+      expect(session.isComplete, isTrue);
+      expect(session.isFlawless, isFalse);
+    });
+
+    test('an incomplete run is never flawless', () {
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.2, 0.2));
+      expect(session.isFlawless, isFalse);
+    });
+  });
+
+  group('PlaySession reset', () {
+    test('clears finds, taps and the clock for a fresh replay', () {
+      final inklings = [_inkling('a', const Offset(0.5, 0.5))];
+      final session = PlaySession(inklings: inklings)
+        ..tap(const Offset(0.1, 0.1)) // miss
+        ..tap(const Offset(0.5, 0.5));
+      expect(session.isComplete, isTrue);
+
+      session.reset();
+
+      expect(session.foundCount, 0);
+      expect(session.taps, isEmpty);
+      expect(session.isComplete, isFalse);
+      expect(session.elapsed, Duration.zero);
     });
   });
 }

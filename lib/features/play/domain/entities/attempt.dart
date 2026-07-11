@@ -56,9 +56,20 @@ class Attempt {
         for (var i = 0; i + 1 < flat.length; i += 2)
           Offset(flat[i].toDouble(), flat[i + 1].toDouble()),
       ],
-      createdAt:
-          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.now(),
+      createdAt: _parseDate(json['createdAt']),
     );
+  }
+
+  /// Attempts are written server-side with a Firestore Timestamp, but older
+  /// documents stored an ISO string — accept both.
+  static DateTime _parseDate(dynamic value) {
+    if (value is String) {
+      return DateTime.tryParse(value)?.toLocal() ?? DateTime.now();
+    }
+    try {
+      return (value as dynamic).toDate() as DateTime;
+    } catch (_) {
+      return DateTime.now();
+    }
   }
 }
