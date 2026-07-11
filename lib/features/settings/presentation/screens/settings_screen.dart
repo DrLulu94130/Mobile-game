@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,26 +23,26 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           _SectionHeader(l.appearance),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.system,
+          RadioGroup<ThemeMode>(
             groupValue: themeMode,
             onChanged: (m) =>
                 ref.read(themeControllerProvider.notifier).set(m!),
-            title: Text(l.matchSystem),
-          ),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.light,
-            groupValue: themeMode,
-            onChanged: (m) =>
-                ref.read(themeControllerProvider.notifier).set(m!),
-            title: Text(l.light),
-          ),
-          RadioListTile<ThemeMode>(
-            value: ThemeMode.dark,
-            groupValue: themeMode,
-            onChanged: (m) =>
-                ref.read(themeControllerProvider.notifier).set(m!),
-            title: Text(l.dark),
+            child: Column(
+              children: [
+                RadioListTile<ThemeMode>(
+                  value: ThemeMode.system,
+                  title: Text(l.matchSystem),
+                ),
+                RadioListTile<ThemeMode>(
+                  value: ThemeMode.light,
+                  title: Text(l.light),
+                ),
+                RadioListTile<ThemeMode>(
+                  value: ThemeMode.dark,
+                  title: Text(l.dark),
+                ),
+              ],
+            ),
           ),
           const Divider(),
           _SectionHeader(l.language),

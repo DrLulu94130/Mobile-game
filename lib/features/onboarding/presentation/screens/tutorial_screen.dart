@@ -77,8 +77,11 @@ class _TutorialScreenState extends ConsumerState<TutorialScreen> {
     setState(() => _lastMiss = result.hit ? null : normalised);
     if (result.hit) {
       try {
+        // ignore: discarded_futures
         HapticFeedback.lightImpact();
-      } catch (_) {}
+      } catch (_) {
+        // Haptics are unavailable on some platforms; never let that throw.
+      }
     }
     if (_session.isComplete) {
       setState(() => _done = true);

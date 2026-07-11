@@ -182,7 +182,7 @@ class _BrushPanel extends StatelessWidget {
               for (final c in _palette) ...[
                 _Swatch(
                   color: c,
-                  selected: state.brushColor.value == c.value,
+                  selected: state.brushColor.toARGB32() == c.toARGB32(),
                   onTap: () => controller.setBrushColor(c),
                 ),
                 const SizedBox(width: 8),

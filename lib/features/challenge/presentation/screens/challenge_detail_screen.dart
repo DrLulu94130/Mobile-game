@@ -106,7 +106,7 @@ class _DetailView extends ConsumerWidget {
                         if (uid != null)
                           _LikeButton(challengeId: challenge.id, uid: uid),
                         const SizedBox(width: 16),
-                        Icon(
+                        const Icon(
                           Icons.mode_comment_outlined,
                           size: 20,
                           color: AppColors.textMuted,

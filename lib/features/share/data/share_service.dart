@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,9 +78,10 @@ class ShareService {
       return;
     }
 
-    await Share.shareXFiles([
-      XFile(file.path),
-    ], text: 'INKOGNITO — Try to find the hidden creature! "$title" $link');
+    await Share.shareXFiles(
+      [XFile(file.path)],
+      text: 'INKOGNITO — Try to find the hidden creature! "$title" $link',
+    );
   }
 
   Future<bool> _canLaunch(String scheme) async {
