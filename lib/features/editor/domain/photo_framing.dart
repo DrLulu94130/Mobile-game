@@ -44,10 +44,7 @@ abstract class PhotoFraming {
     final rect = destRect(canvas, photoAspect, scale, Offset.zero);
     final maxDx = ((rect.width - canvas.width) / 2) / canvas.width;
     final maxDy = ((rect.height - canvas.height) / 2) / canvas.height;
-    return Offset(
-      pan.dx.clamp(-maxDx, maxDx),
-      pan.dy.clamp(-maxDy, maxDy),
-    );
+    return Offset(pan.dx.clamp(-maxDx, maxDx), pan.dy.clamp(-maxDy, maxDy));
   }
 
   /// Maps a normalised canvas point (0..1) to a normalised photo point
@@ -60,7 +57,10 @@ abstract class PhotoFraming {
     Offset pan,
   ) {
     final dest = destRect(canvas, photoAspect, scale, pan);
-    final px = Offset(canvasNorm.dx * canvas.width, canvasNorm.dy * canvas.height);
+    final px = Offset(
+      canvasNorm.dx * canvas.width,
+      canvasNorm.dy * canvas.height,
+    );
     return Offset(
       ((px.dx - dest.left) / dest.width).clamp(0.0, 1.0),
       ((px.dy - dest.top) / dest.height).clamp(0.0, 1.0),

@@ -20,8 +20,10 @@ class DailyScreen extends ConsumerWidget {
         slivers: [
           SliverAppBar(
             floating: true,
-            title:
-                Text(l.daily, style: const TextStyle(fontWeight: FontWeight.w900)),
+            title: Text(
+              l.daily,
+              style: const TextStyle(fontWeight: FontWeight.w900),
+            ),
           ),
           SliverToBoxAdapter(
             child: Container(

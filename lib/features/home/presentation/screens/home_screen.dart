@@ -58,20 +58,20 @@ class HomeScreen extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Container(
-                      width: 280,
-                      height: 280,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            Colors.white.withValues(alpha: 0.28),
-                            Colors.white.withValues(alpha: 0.06),
-                            Colors.white.withValues(alpha: 0),
-                          ],
-                          stops: const [0.0, 0.6, 1.0],
-                        ),
-                      ),
-                    )
+                          width: 280,
+                          height: 280,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.white.withValues(alpha: 0.28),
+                                Colors.white.withValues(alpha: 0.06),
+                                Colors.white.withValues(alpha: 0),
+                              ],
+                              stops: const [0.0, 0.6, 1.0],
+                            ),
+                          ),
+                        )
                         .animate(onPlay: (c) => c.repeat(reverse: true))
                         .scaleXY(begin: 0.96, end: 1.05, duration: 1600.ms),
                     const Positioned.fill(child: Mascot3D()),

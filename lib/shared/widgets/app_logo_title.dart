@@ -8,11 +8,7 @@ import '../../core/theme/app_colors.dart';
 /// coloured glow — for a crisp, game-like look. Uses the bundled `LuckiestGuy`
 /// font so the title never "pops in" while a web font downloads.
 class AppLogoTitle extends StatelessWidget {
-  const AppLogoTitle({
-    this.fontSize = 46,
-    this.letterSpacing = 3,
-    super.key,
-  });
+  const AppLogoTitle({this.fontSize = 46, this.letterSpacing = 3, super.key});
 
   final double fontSize;
   final double letterSpacing;

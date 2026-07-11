@@ -18,10 +18,15 @@ class LeaderboardScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(l.rankings,
-              style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l.rankings,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           bottom: TabBar(
-            tabs: [Tab(text: l.topPlayers), Tab(text: l.creators)],
+            tabs: [
+              Tab(text: l.topPlayers),
+              Tab(text: l.creators),
+            ],
           ),
         ),
         body: TabBarView(
@@ -66,11 +71,8 @@ class _PlayerList extends ConsumerWidget {
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80),
           itemCount: users.length,
-          itemBuilder: (_, i) => _RankRow(
-            rank: i + 1,
-            user: users[i],
-            metric: metric,
-          ),
+          itemBuilder: (_, i) =>
+              _RankRow(rank: i + 1, user: users[i], metric: metric),
         );
       },
     );

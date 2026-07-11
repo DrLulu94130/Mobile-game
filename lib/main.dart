@@ -70,8 +70,9 @@ Future<void> main() async {
 /// Best-effort initialisation that runs after the first frame so it never
 /// blocks startup. Every step is independently guarded upstream.
 Future<void> _warmUpServices(ProviderContainer container) async {
-  await FirebaseCrashlytics.instance
-      .setCrashlyticsCollectionEnabled(!kDebugMode);
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+    !kDebugMode,
+  );
   await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(!kDebugMode);
 
   // Best-effort billing bootstrap; failure must not affect the app.

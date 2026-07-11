@@ -11,17 +11,21 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 class Env {
   const Env._();
 
-  static const String revenueCatAndroidKey =
-      String.fromEnvironment('RC_ANDROID_KEY');
-  static const String revenueCatIosKey =
-      String.fromEnvironment('RC_IOS_KEY');
+  static const String revenueCatAndroidKey = String.fromEnvironment(
+    'RC_ANDROID_KEY',
+  );
+  static const String revenueCatIosKey = String.fromEnvironment('RC_IOS_KEY');
 
   /// Public deep-link / universal-link host used to open shared challenges.
-  static const String dynamicLinkHost =
-      String.fromEnvironment('DL_HOST', defaultValue: 'inkognito.page.link');
+  static const String dynamicLinkHost = String.fromEnvironment(
+    'DL_HOST',
+    defaultValue: 'inkognito.page.link',
+  );
 
-  static const String appStoreId =
-      String.fromEnvironment('APPSTORE_ID', defaultValue: '0000000000');
+  static const String appStoreId = String.fromEnvironment(
+    'APPSTORE_ID',
+    defaultValue: '0000000000',
+  );
   static const String androidPackage = String.fromEnvironment(
     'ANDROID_PACKAGE',
     defaultValue: 'app.inkognito.game',
@@ -36,9 +40,7 @@ class Env {
     final key = Platform.isIOS ? revenueCatIosKey : revenueCatAndroidKey;
     if (key.isEmpty) return;
     try {
-      await Purchases.setLogLevel(
-        kDebugMode ? LogLevel.debug : LogLevel.warn,
-      );
+      await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.warn);
       await Purchases.configure(PurchasesConfiguration(key));
     } catch (_) {
       // Billing is optional; never block startup.

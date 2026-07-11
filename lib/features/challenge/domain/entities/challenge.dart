@@ -81,22 +81,22 @@ class Challenge {
   /// Firestore serialisation. `createdAt` is written as an ISO string here;
   /// the repository swaps in a server timestamp on create.
   Map<String, dynamic> toJson() => {
-        'authorId': authorId,
-        'authorName': authorName,
-        'authorAvatarUrl': authorAvatarUrl,
-        'title': title,
-        'camouflagedImageUrl': camouflagedImageUrl,
-        'revealedImageUrl': revealedImageUrl,
-        'inklings': inklings.map((e) => e.toJson()).toList(),
-        'canvasAspectRatio': canvasAspectRatio,
-        'createdAt': createdAt.toUtc().toIso8601String(),
-        'likeCount': likeCount,
-        'commentCount': commentCount,
-        'playCount': playCount,
-        'bestTimeMs': bestTimeMs,
-        'isPublic': isPublic,
-        'difficulty': difficulty,
-      };
+    'authorId': authorId,
+    'authorName': authorName,
+    'authorAvatarUrl': authorAvatarUrl,
+    'title': title,
+    'camouflagedImageUrl': camouflagedImageUrl,
+    'revealedImageUrl': revealedImageUrl,
+    'inklings': inklings.map((e) => e.toJson()).toList(),
+    'canvasAspectRatio': canvasAspectRatio,
+    'createdAt': createdAt.toUtc().toIso8601String(),
+    'likeCount': likeCount,
+    'commentCount': commentCount,
+    'playCount': playCount,
+    'bestTimeMs': bestTimeMs,
+    'isPublic': isPublic,
+    'difficulty': difficulty,
+  };
 
   factory Challenge.fromJson(String id, Map<String, dynamic> json) {
     return Challenge(
@@ -110,8 +110,7 @@ class Challenge {
       inklings: (json['inklings'] as List? ?? [])
           .map((e) => PlacedInkling.fromJson(e as Map<String, dynamic>))
           .toList(),
-      canvasAspectRatio:
-          (json['canvasAspectRatio'] as num?)?.toDouble() ?? 1.0,
+      canvasAspectRatio: (json['canvasAspectRatio'] as num?)?.toDouble() ?? 1.0,
       createdAt: _parseDate(json['createdAt']),
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,

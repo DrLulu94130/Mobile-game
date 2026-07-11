@@ -28,8 +28,9 @@ class AttemptRepository {
         .orderBy('score', descending: true)
         .limit(limit)
         .snapshots()
-        .map((s) =>
-            s.docs.map((d) => Attempt.fromJson(d.id, d.data())).toList());
+        .map(
+          (s) => s.docs.map((d) => Attempt.fromJson(d.id, d.data())).toList(),
+        );
   }
 }
 
@@ -37,8 +38,8 @@ final attemptRepositoryProvider = Provider<AttemptRepository>(
   (ref) => AttemptRepository(ref.watch(firestoreProvider)),
 );
 
-final challengeLeaderboardProvider =
-    StreamProvider.autoDispose.family<List<Attempt>, String>(
-  (ref, challengeId) =>
-      ref.watch(attemptRepositoryProvider).watchLeaderboard(challengeId),
-);
+final challengeLeaderboardProvider = StreamProvider.autoDispose
+    .family<List<Attempt>, String>(
+      (ref, challengeId) =>
+          ref.watch(attemptRepositoryProvider).watchLeaderboard(challengeId),
+    );

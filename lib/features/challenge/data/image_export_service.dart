@@ -72,8 +72,7 @@ class ImageExportService {
 
     final picture = recorder.endRecording();
     final image = await picture.toImage(outW, outH);
-    final byteData =
-        await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
     picture.dispose();
     image.dispose();
 
@@ -95,8 +94,9 @@ class ImageExportService {
     canvas.translate(rect.center.dx, rect.center.dy);
     canvas.rotate(inkling.rotation);
     canvas.translate(-rect.width / 2, -rect.height / 2);
-    InklingPainter(inkling: inkling)
-        .paint(canvas, Size(rect.width, rect.height));
+    InklingPainter(
+      inkling: inkling,
+    ).paint(canvas, Size(rect.width, rect.height));
     canvas.restore();
   }
 

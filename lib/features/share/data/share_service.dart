@@ -11,7 +11,11 @@ import '../../../core/config/env.dart';
 
 /// Social networks Inkognito can share to directly.
 enum ShareTarget {
-  instagramStory('Instagram', 'com.instagram.android', 'instagram-stories://share'),
+  instagramStory(
+    'Instagram',
+    'com.instagram.android',
+    'instagram-stories://share',
+  ),
   snapchat('Snapchat', 'com.snapchat.android', 'snapchat://'),
   tiktok('TikTok', 'com.zhiliaoapp.musically', 'snssdk1233://'),
   whatsapp('WhatsApp', 'com.whatsapp', 'whatsapp://'),
@@ -58,7 +62,10 @@ class ShareService {
       return;
     }
 
-    final file = await _writeTemp(camouflagedImage, 'inkognito_$challengeId.jpg');
+    final file = await _writeTemp(
+      camouflagedImage,
+      'inkognito_$challengeId.jpg',
+    );
 
     // Try a direct hand-off to the target app; on failure fall back to the
     // system share sheet so the user can still pick another app.
@@ -72,10 +79,9 @@ class ShareService {
       return;
     }
 
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: 'INKOGNITO — Try to find the hidden creature! "$title" $link',
-    );
+    await Share.shareXFiles([
+      XFile(file.path),
+    ], text: 'INKOGNITO — Try to find the hidden creature! "$title" $link');
   }
 
   Future<bool> _canLaunch(String scheme) async {

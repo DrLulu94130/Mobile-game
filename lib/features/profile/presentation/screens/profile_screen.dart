@@ -54,8 +54,10 @@ class _ProfileView extends ConsumerWidget {
       slivers: [
         SliverAppBar(
           pinned: true,
-          title: Text(l.navProfile,
-              style: const TextStyle(fontWeight: FontWeight.w900)),
+          title: Text(
+            l.navProfile,
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.settings_outlined),
@@ -102,8 +104,11 @@ class _ProfileView extends ConsumerWidget {
                           if (user.isPremium)
                             const Row(
                               children: [
-                                Icon(Icons.workspace_premium,
-                                    size: 16, color: AppColors.glow),
+                                Icon(
+                                  Icons.workspace_premium,
+                                  size: 16,
+                                  color: AppColors.glow,
+                                ),
                                 SizedBox(width: 4),
                                 Text('Premium member'),
                               ],
@@ -146,8 +151,7 @@ class _ProfileView extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
             child: Text(
               l.yourChallenges,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
             ),
           ),
         ),
@@ -175,8 +179,7 @@ class _ProfileView extends ConsumerWidget {
                     children: [
                       for (final c in list)
                         GestureDetector(
-                          onTap: () =>
-                              context.push(Routes.challengePath(c.id)),
+                          onTap: () => context.push(Routes.challengePath(c.id)),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(14),
                             child: CachedNetworkImage(
@@ -271,7 +274,9 @@ class _BadgeStrip extends StatelessWidget {
                 Text(
                   AppLocalizations.of(context).badges,
                   style: const TextStyle(
-                      fontWeight: FontWeight.w800, fontSize: 16),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
                 ),
                 TextButton(
                   onPressed: () => context.push(Routes.badges),

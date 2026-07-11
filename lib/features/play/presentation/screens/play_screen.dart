@@ -64,7 +64,9 @@ class _PlayViewState extends ConsumerState<_PlayView> {
   void initState() {
     super.initState();
     _session = PlaySession(inklings: widget.challenge.inklings);
-    ref.read(challengeRepositoryProvider).incrementPlayCount(widget.challenge.id);
+    ref
+        .read(challengeRepositoryProvider)
+        .incrementPlayCount(widget.challenge.id);
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && !_finished) setState(() {});
     });
@@ -111,14 +113,16 @@ class _PlayViewState extends ConsumerState<_PlayView> {
         createdAt: DateTime.now(),
       );
       await ref.read(attemptRepositoryProvider).save(attempt);
-      await ref.read(challengeRepositoryProvider).recordBestTime(
-            widget.challenge.id,
-            _session.elapsed.inMilliseconds,
-          );
+      await ref
+          .read(challengeRepositoryProvider)
+          .recordBestTime(widget.challenge.id, _session.elapsed.inMilliseconds);
       // Award XP for solving.
-      final xp = AppConstants.xpPerChallengeSolved +
+      final xp =
+          AppConstants.xpPerChallengeSolved +
           _session.foundCount * AppConstants.xpPerInklingFound;
-      await ref.read(progressionServiceProvider).awardXp(
+      await ref
+          .read(progressionServiceProvider)
+          .awardXp(
             uid: user.uid,
             xpDelta: xp,
             challengesSolvedDelta: 1,
@@ -141,7 +145,10 @@ class _PlayViewState extends ConsumerState<_PlayView> {
               aspectRatio: widget.challenge.canvasAspectRatio,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final size = Size(constraints.maxWidth, constraints.maxHeight);
+                  final size = Size(
+                    constraints.maxWidth,
+                    constraints.maxHeight,
+                  );
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTapUp: (d) => _onTap(
@@ -192,10 +199,7 @@ class _PlayViewState extends ConsumerState<_PlayView> {
                   icon: Icons.search,
                   text: '${_session.foundCount}/${_session.total}',
                 ),
-                _HudPill(
-                  icon: Icons.timer_outlined,
-                  text: _format(elapsed),
-                ),
+                _HudPill(icon: Icons.timer_outlined, text: _format(elapsed)),
               ],
             ),
           ),

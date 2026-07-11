@@ -14,8 +14,7 @@ const _uuid = Uuid();
 /// Manages the editor canvas: placing, transforming and painting Inklings,
 /// plus a full undo/redo history.
 class EditorController extends StateNotifier<EditorState> {
-  EditorController()
-      : super(const EditorState(inklings: [])) {
+  EditorController() : super(const EditorState(inklings: [])) {
     _pushHistory();
   }
 
@@ -39,8 +38,7 @@ class EditorController extends StateNotifier<EditorState> {
 
   /// Toggles pan/pinch-to-zoom inspection mode. Clears the active tool's
   /// interaction so gestures don't fight the [InteractiveViewer].
-  void toggleZoom() =>
-      state = state.copyWith(zoomEnabled: !state.zoomEnabled);
+  void toggleZoom() => state = state.copyWith(zoomEnabled: !state.zoomEnabled);
 
   /// Reframes the photo inside the vertical canvas (zoom + pan). The caller
   /// is responsible for clamping via [PhotoFraming].
@@ -110,12 +108,14 @@ class EditorController extends StateNotifier<EditorState> {
   // --- Live transforms (no history until the gesture ends) ---
 
   void moveSelected(Offset deltaNormalised) {
-    _mutateSelected((i) => i.copyWith(
-          center: Offset(
-            (i.center.dx + deltaNormalised.dx).clamp(0.0, 1.0),
-            (i.center.dy + deltaNormalised.dy).clamp(0.0, 1.0),
-          ),
-        ));
+    _mutateSelected(
+      (i) => i.copyWith(
+        center: Offset(
+          (i.center.dx + deltaNormalised.dx).clamp(0.0, 1.0),
+          (i.center.dy + deltaNormalised.dy).clamp(0.0, 1.0),
+        ),
+      ),
+    );
   }
 
   void scaleSelected(double factor) {
@@ -125,20 +125,20 @@ class EditorController extends StateNotifier<EditorState> {
   }
 
   void rotateSelected(double deltaRadians) {
-    _mutateSelected(
-      (i) => i.copyWith(rotation: i.rotation + deltaRadians),
-    );
+    _mutateSelected((i) => i.copyWith(rotation: i.rotation + deltaRadians));
   }
 
   /// Directly set transform (used by the two-finger gesture handler).
   void transformSelected({Offset? center, double? size, double? rotation}) {
-    _mutateSelected((i) => i.copyWith(
-          center: center == null
-              ? null
-              : Offset(center.dx.clamp(0, 1), center.dy.clamp(0, 1)),
-          size: size?.clamp(0.05, 0.9),
-          rotation: rotation,
-        ));
+    _mutateSelected(
+      (i) => i.copyWith(
+        center: center == null
+            ? null
+            : Offset(center.dx.clamp(0, 1), center.dy.clamp(0, 1)),
+        size: size?.clamp(0.05, 0.9),
+        rotation: rotation,
+      ),
+    );
   }
 
   /// Call when a drag/scale gesture completes to snapshot the result.
@@ -261,8 +261,8 @@ class EditorController extends StateNotifier<EditorState> {
 
 final editorControllerProvider =
     StateNotifierProvider.autoDispose<EditorController, EditorState>(
-  (ref) => EditorController(),
-);
+      (ref) => EditorController(),
+    );
 
 /// Utility: rotate a point around a pivot, used to map screen taps into an
 /// Inkling's local (unrotated) space.
@@ -271,8 +271,5 @@ Offset rotatePoint(Offset point, Offset pivot, double radians) {
   final c = math.cos(radians);
   final dx = point.dx - pivot.dx;
   final dy = point.dy - pivot.dy;
-  return Offset(
-    pivot.dx + dx * c - dy * s,
-    pivot.dy + dx * s + dy * c,
-  );
+  return Offset(pivot.dx + dx * c - dy * s, pivot.dy + dx * s + dy * c);
 }

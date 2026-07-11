@@ -46,10 +46,7 @@ class _Mascot3DState extends State<Mascot3D> {
             )
           : const Center(
               key: ValueKey('placeholder'),
-              child: InklingAvatar(
-                species: InklingSpecies.classic,
-                size: 180,
-              ),
+              child: InklingAvatar(species: InklingSpecies.classic, size: 180),
             ),
     );
   }

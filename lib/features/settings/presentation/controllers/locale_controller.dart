@@ -14,5 +14,5 @@ class LocaleController extends StateNotifier<Locale?> {
 
 final localeControllerProvider =
     StateNotifierProvider<LocaleController, Locale?>(
-  (ref) => LocaleController(),
-);
+      (ref) => LocaleController(),
+    );

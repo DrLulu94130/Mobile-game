@@ -49,10 +49,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return loc == Routes.splash ? null : Routes.splash;
     },
     routes: [
-      GoRoute(
-        path: Routes.splash,
-        builder: (_, __) => const SplashScreen(),
-      ),
+      GoRoute(path: Routes.splash, builder: (_, __) => const SplashScreen()),
       GoRoute(
         path: Routes.onboarding,
         builder: (_, __) => const OnboardingScreen(),
@@ -153,9 +150,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const BadgesScreen(),
       ),
     ],
-    errorBuilder: (_, state) => Scaffold(
-      body: Center(child: Text('Route not found: ${state.uri}')),
-    ),
+    errorBuilder: (_, state) =>
+        Scaffold(body: Center(child: Text('Route not found: ${state.uri}'))),
   );
 });
 

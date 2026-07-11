@@ -87,7 +87,11 @@ class _PremiumChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ActionChip(
-      avatar: const Icon(Icons.workspace_premium, size: 18, color: AppColors.glow),
+      avatar: const Icon(
+        Icons.workspace_premium,
+        size: 18,
+        color: AppColors.glow,
+      ),
       label: Text(AppLocalizations.of(context).premium),
       onPressed: () => context.push(Routes.premium),
     );
@@ -111,8 +115,10 @@ class _TrendingStrip extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               child: Text(
                 AppLocalizations.of(context).feedTrending,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
+                ),
               ),
             ),
             SizedBox(

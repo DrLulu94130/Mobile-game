@@ -62,29 +62,26 @@ class ProgressionService {
         challengesSolved: user.challengesSolved + challengesSolvedDelta,
         streakDays: streak,
         level: newLevel,
-        perfectSolves: ((data['perfectSolves'] as num?)?.toInt() ?? 0) +
+        perfectSolves:
+            ((data['perfectSolves'] as num?)?.toInt() ?? 0) +
             perfectSolvesDelta,
         totalLikes: (data['totalLikes'] as num?)?.toInt() ?? 0,
       );
       final earned = BadgeCatalog.earned(ctx);
-      final newBadges =
-          earned.where((id) => !user.badgeIds.contains(id)).toList();
+      final newBadges = earned
+          .where((id) => !user.badgeIds.contains(id))
+          .toList();
 
-      tx.set(
-        ref,
-        {
-          'xp': newXp,
-          'level': newLevel,
-          'streakDays': streak,
-          'lastActiveDay': today,
-          'challengesCreated':
-              FieldValue.increment(challengesCreatedDelta),
-          'challengesSolved': FieldValue.increment(challengesSolvedDelta),
-          'perfectSolves': FieldValue.increment(perfectSolvesDelta),
-          'badgeIds': earned,
-        },
-        SetOptions(merge: true),
-      );
+      tx.set(ref, {
+        'xp': newXp,
+        'level': newLevel,
+        'streakDays': streak,
+        'lastActiveDay': today,
+        'challengesCreated': FieldValue.increment(challengesCreatedDelta),
+        'challengesSolved': FieldValue.increment(challengesSolvedDelta),
+        'perfectSolves': FieldValue.increment(perfectSolvesDelta),
+        'badgeIds': earned,
+      }, SetOptions(merge: true));
 
       update = ProgressionUpdate(
         newXp: newXp,
@@ -121,9 +118,11 @@ class ProgressionService {
     final last = DateTime.tryParse(lastActiveDay);
     if (last == null) return 1;
     final now = DateTime.now();
-    final diff = DateTime(now.year, now.month, now.day)
-        .difference(DateTime(last.year, last.month, last.day))
-        .inDays;
+    final diff = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).difference(DateTime(last.year, last.month, last.day)).inDays;
     if (diff <= 0) return storedStreak == 0 ? 1 : storedStreak; // same day
     if (diff == 1) return storedStreak + 1; // consecutive day
     return 1; // streak broken

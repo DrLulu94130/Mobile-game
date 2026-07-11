@@ -32,15 +32,15 @@ class Attempt {
   double get accuracy => taps.isEmpty ? 0 : foundCount / taps.length;
 
   Map<String, dynamic> toJson() => {
-        'challengeId': challengeId,
-        'playerId': playerId,
-        'foundCount': foundCount,
-        'totalInklings': totalInklings,
-        'durationMs': durationMs,
-        'score': score,
-        'taps': taps.expand((o) => [o.dx, o.dy]).toList(),
-        'createdAt': createdAt.toUtc().toIso8601String(),
-      };
+    'challengeId': challengeId,
+    'playerId': playerId,
+    'foundCount': foundCount,
+    'totalInklings': totalInklings,
+    'durationMs': durationMs,
+    'score': score,
+    'taps': taps.expand((o) => [o.dx, o.dy]).toList(),
+    'createdAt': createdAt.toUtc().toIso8601String(),
+  };
 
   factory Attempt.fromJson(String id, Map<String, dynamic> json) {
     final flat = (json['taps'] as List? ?? []).cast<num>();
@@ -58,7 +58,7 @@ class Attempt {
       ],
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
-              DateTime.now(),
+          DateTime.now(),
     );
   }
 }
