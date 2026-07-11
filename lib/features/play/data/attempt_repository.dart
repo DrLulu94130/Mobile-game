@@ -5,7 +5,8 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/firebase_providers.dart';
 import '../domain/entities/attempt.dart';
 
-/// Persists play attempts and exposes per-challenge leaderboards.
+/// Reads play attempts (written server-side by the `submitAttempt`
+/// Cloud Function) and exposes per-challenge leaderboards.
 class AttemptRepository {
   AttemptRepository(this._firestore);
 
@@ -13,31 +14,6 @@ class AttemptRepository {
 
   CollectionReference<Map<String, dynamic>> get _col =>
       _firestore.collection(AppConstants.attemptsCollection);
-
-  Future<void> save(Attempt attempt) async {
-    await _col.add({
-      ...attempt.toJson(),
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-  }
-
-  /// Whether [playerId] has already recorded an attempt on [challengeId].
-  ///
-  /// Used to gate progression rewards: once a player has seen a challenge's
-  /// solution, later runs must not pay out XP again. Fails open (false) so a
-  /// transient read error never blocks a legitimate first reward.
-  Future<bool> hasAttempted(String challengeId, String playerId) async {
-    try {
-      final snap = await _col
-          .where('challengeId', isEqualTo: challengeId)
-          .where('playerId', isEqualTo: playerId)
-          .limit(1)
-          .get();
-      return snap.docs.isNotEmpty;
-    } catch (_) {
-      return false;
-    }
-  }
 
   /// Top attempts for a challenge, ranked by score.
   Stream<List<Attempt>> watchLeaderboard(String challengeId, {int limit = 20}) {

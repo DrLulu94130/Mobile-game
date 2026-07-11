@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart' show Offset;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/result.dart';
 import '../../../auth/data/auth_repository.dart';
@@ -12,7 +11,6 @@ import '../../../challenge/data/challenge_repository.dart';
 import '../../../challenge/data/image_export_service.dart';
 import '../../../challenge/data/storage_service.dart';
 import '../../../challenge/domain/entities/challenge.dart';
-import '../../../progression/data/progression_service.dart';
 import '../../domain/entities/placed_inkling.dart';
 import '../../domain/photo_framing.dart';
 
@@ -29,8 +27,9 @@ class PublishOutput {
   final Uint8List revealedBytes;
 }
 
-/// Renders the final images, uploads them and creates the Firestore challenge,
-/// then awards XP for authoring. Exposed as an [AsyncValue] for the UI.
+/// Renders the final images, uploads them and creates the Firestore
+/// challenge; authoring XP is then awarded server-side. Exposed as an
+/// [AsyncValue] for the UI.
 class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
   @override
   Future<PublishOutput?> build() async => null;
@@ -107,14 +106,9 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
 
       switch (created) {
         case Success(value: final c):
-          // Award XP for authoring (best-effort).
-          await ref
-              .read(progressionServiceProvider)
-              .awardXp(
-                uid: user.uid,
-                xpDelta: AppConstants.xpPerChallengeCreated,
-                challengesCreatedDelta: 1,
-              );
+          // Creation XP, counters and badges are awarded server-side by the
+          // onChallengeCreated Cloud Function — awarding here too would
+          // double-count.
           final output = PublishOutput(
             challenge: c,
             camouflagedBytes: camouflaged,

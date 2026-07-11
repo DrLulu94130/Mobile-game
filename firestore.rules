@@ -53,19 +53,15 @@ service cloud.firestore {
           && newN('totalLikes') == 0
           && newN('streakDays') <= 1;
 
-      // Owners update their own profile, but progression can only advance
-      // by what a single action can legitimately award: one solve/creation,
-      // a bounded XP payout, one streak day (or a reset to 1 when broken).
+      // Owners may edit cosmetic profile fields only. Progression (xp,
+      // level, streak, counters, badges) and entitlements are written
+      // exclusively by Cloud Functions with the Admin SDK, which bypasses
+      // these rules — a tampered client cannot touch them at all.
       allow update: if isOwner(uid)
-          && deltaWithin('xp', 0, 500)
-          && deltaWithin('level', 0, 5)
-          && deltaWithin('challengesCreated', 0, 1)
-          && deltaWithin('challengesSolved', 0, 1)
-          && deltaWithin('perfectSolves', 0, 1)
-          && deltaWithin('totalLikes', 0, 1)
-          && (newN('streakDays') == 1 || deltaWithin('streakDays', 0, 1))
-          && request.resource.data.get('badgeIds', []) is list
-          && request.resource.data.get('badgeIds', []).size() <= 100;
+          && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['displayName', 'avatarUrl'])
+          && request.resource.data.get('displayName', '') is string
+          && request.resource.data.get('displayName', '').size() <= 40;
 
       allow delete: if false;
     }
@@ -74,18 +70,14 @@ service cloud.firestore {
     match /challenges/{challengeId} {
 
       // Social interactions from any signed-in player: like/unlike, one
-      // play, one comment per write, and a best time that can only improve.
+      // play, one comment per write. Best times are server-written by the
+      // submitAttempt Cloud Function only.
       function isSocialBump() {
         return request.resource.data.diff(resource.data).affectedKeys()
-                   .hasOnly(['likeCount', 'playCount', 'commentCount',
-                             'bestTimeMs'])
+                   .hasOnly(['likeCount', 'playCount', 'commentCount'])
             && deltaWithin('likeCount', -1, 1)
             && deltaWithin('playCount', 0, 1)
-            && deltaWithin('commentCount', 0, 1)
-            && (newN('bestTimeMs') == oldN('bestTimeMs')
-                || (newN('bestTimeMs') > 0
-                    && (oldN('bestTimeMs') == 0
-                        || newN('bestTimeMs') < oldN('bestTimeMs'))));
+            && deltaWithin('commentCount', 0, 1);
       }
 
       allow read: if isSignedIn() &&
@@ -132,24 +124,11 @@ service cloud.firestore {
     }
 
     // --- Attempts (play results) ---
+    // Written exclusively by the submitAttempt Cloud Function, which
+    // re-runs detection server-side; clients can only read them.
     match /attempts/{attemptId} {
       allow read: if isSignedIn();
-
-      // Results must be internally consistent and within the bounds the
-      // scoring formula can actually produce (max 2000).
-      allow create: if isSignedIn()
-          && request.resource.data.playerId == request.auth.uid
-          && newN('totalInklings') >= 1
-          && newN('totalInklings') <= 12
-          && newN('foundCount') >= 0
-          && newN('foundCount') <= newN('totalInklings')
-          && newN('durationMs') >= 0
-          && newN('score') >= 0
-          && newN('score') <= 2000
-          && request.resource.data.get('taps', []) is list
-          && request.resource.data.get('taps', []).size() <= 1000;
-
-      allow update, delete: if false;
+      allow create, update, delete: if false;
     }
   }
 }

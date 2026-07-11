@@ -88,18 +88,6 @@ class ChallengeRepository {
     return _col.doc(id).update({'playCount': FieldValue.increment(1)});
   }
 
-  /// Records a new best time transactionally when it beats the stored one.
-  Future<void> recordBestTime(String id, int timeMs) async {
-    await _firestore.runTransaction((tx) async {
-      final ref = _col.doc(id);
-      final snap = await tx.get(ref);
-      final current = (snap.data()?['bestTimeMs'] as num?)?.toInt();
-      if (current == null || timeMs < current) {
-        tx.update(ref, {'bestTimeMs': timeMs});
-      }
-    });
-  }
-
   Future<void> delete(String id) => _col.doc(id).delete();
 
   List<Challenge> _mapDocs(QuerySnapshot<Map<String, dynamic>> snap) =>

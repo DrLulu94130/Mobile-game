@@ -11,11 +11,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../challenge/data/challenge_repository.dart';
 import '../../../challenge/domain/entities/challenge.dart';
-import '../../../progression/data/progression_service.dart';
 import '../../../../shared/widgets/app_widgets.dart';
-import '../../data/attempt_repository.dart';
+import '../../data/play_result_service.dart';
 import '../../domain/detection_engine.dart';
-import '../../domain/entities/attempt.dart';
 import '../widgets/found_markers.dart';
 import '../widgets/result_overlay.dart';
 
@@ -118,53 +116,14 @@ class _PlayViewState extends ConsumerState<_PlayView> {
     _finished = true;
     _ticker?.cancel();
 
-    final completed = _session.isComplete;
-    final score = _session.computeScore();
+    // The server re-runs detection and owns scoring, best times and
+    // progression; the overlay below still renders the local session
+    // immediately without waiting for the round trip.
     final user = ref.read(authRepositoryProvider).currentUser;
-
     if (user != null) {
-      final attempts = ref.read(attemptRepositoryProvider);
-      // Progression pays out once per challenge: after the reveal has been
-      // seen, replays would be free XP.
-      final firstAttempt = !await attempts.hasAttempted(
-        widget.challenge.id,
-        user.uid,
-      );
-
-      final attempt = Attempt(
-        id: '',
-        challengeId: widget.challenge.id,
-        playerId: user.uid,
-        foundCount: _session.foundCount,
-        totalInklings: _session.total,
-        durationMs: _session.elapsed.inMilliseconds,
-        score: score,
-        taps: _session.taps,
-        createdAt: DateTime.now(),
-      );
-      await attempts.save(attempt);
-
-      // A best time only makes sense for a fully solved round.
-      if (completed) {
-        await ref
-            .read(challengeRepositoryProvider)
-            .recordBestTime(
-              widget.challenge.id,
-              _session.elapsed.inMilliseconds,
-            );
-      }
-
-      final xp = _session.computeXp(firstAttempt: firstAttempt);
-      if (xp > 0) {
-        await ref
-            .read(progressionServiceProvider)
-            .awardXp(
-              uid: user.uid,
-              xpDelta: xp,
-              challengesSolvedDelta: completed ? 1 : 0,
-              perfectSolvesDelta: _session.isFlawless ? 1 : 0,
-            );
-      }
+      await ref
+          .read(playResultServiceProvider)
+          .submit(challengeId: widget.challenge.id, session: _session);
     }
 
     if (mounted) setState(() {});
