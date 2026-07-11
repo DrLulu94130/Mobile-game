@@ -176,6 +176,54 @@ abstract class AppLocalizations {
   /// **'Share the puzzle. They tap to find what you hid — against the clock.'**
   String get onboardBody3;
 
+  /// No description provided for @tutorialSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get tutorialSkip;
+
+  /// No description provided for @tutorialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Two Inklings are hiding here'**
+  String get tutorialTitle;
+
+  /// No description provided for @tutorialFindBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap them to catch them!'**
+  String get tutorialFindBody;
+
+  /// No description provided for @tutorialOneLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice! One more…'**
+  String get tutorialOneLeft;
+
+  /// No description provided for @tutorialDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve got it!'**
+  String get tutorialDoneTitle;
+
+  /// No description provided for @tutorialDoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Players paint their Inklings with the scene\'s colours until they vanish. Your turn.'**
+  String get tutorialDoneBody;
+
+  /// No description provided for @tutorialCreateCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide your first Inkling'**
+  String get tutorialCreateCta;
+
+  /// No description provided for @tutorialExploreCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore challenges'**
+  String get tutorialExploreCta;
+
   /// No description provided for @welcomeBack.
   ///
   /// In en, this message translates to:

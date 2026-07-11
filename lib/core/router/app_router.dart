@@ -10,8 +10,10 @@ import '../../features/editor/presentation/screens/create_screen.dart';
 import '../../features/editor/presentation/screens/editor_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/leaderboard/presentation/screens/leaderboard_screen.dart';
+import '../../features/onboarding/data/first_run_service.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/onboarding/presentation/screens/splash_screen.dart';
+import '../../features/onboarding/presentation/screens/tutorial_screen.dart';
 import '../../features/packs/presentation/screens/packs_screen.dart';
 import '../../features/play/presentation/screens/play_screen.dart';
 import '../../features/premium/presentation/screens/premium_screen.dart';
@@ -39,9 +41,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       final entryRoutes = {Routes.splash, Routes.onboarding, Routes.signIn};
 
-      // Signed in: any entry route funnels straight into the game.
+      // Signed in: entry routes funnel into the game — through the playable
+      // tutorial on first launch. Hold the splash until the stored
+      // tutorial flag has been read.
       if (loggedIn) {
-        return entryRoutes.contains(loc) ? Routes.home : null;
+        if (!entryRoutes.contains(loc)) return null;
+        final tutorialDone = ref.read(tutorialDoneProvider).valueOrNull;
+        if (tutorialDone == null) {
+          return loc == Routes.splash ? null : Routes.splash;
+        }
+        return tutorialDone ? Routes.home : Routes.tutorial;
       }
 
       // Signed out: hold on the splash — it signs the player in anonymously
@@ -57,6 +66,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.signIn,
         builder: (_, __) => const OnboardingScreen(startOnSignIn: true),
+      ),
+      GoRoute(
+        path: Routes.tutorial,
+        builder: (_, __) => const TutorialScreen(),
       ),
 
       // The game shell: a persistent bottom navigation bar hosts the four main
@@ -155,9 +168,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Bridges Riverpod's auth state to GoRouter's [Listenable] refresh contract.
+/// Bridges Riverpod's auth and first-run state to GoRouter's [Listenable]
+/// refresh contract so redirects re-evaluate when either resolves.
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Ref ref) {
     ref.listen(currentUserProvider, (_, __) => notifyListeners());
+    ref.listen(tutorialDoneProvider, (_, __) => notifyListeners());
   }
 }
