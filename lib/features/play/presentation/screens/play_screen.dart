@@ -7,7 +7,6 @@ import 'package:inkognito/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/data/auth_repository.dart';
 import '../../../challenge/data/challenge_repository.dart';
@@ -59,14 +58,17 @@ class _PlayViewState extends ConsumerState<_PlayView> {
   Timer? _ticker;
   Offset? _lastMiss;
   bool _finished = false;
+  bool _playCounted = false;
 
   @override
   void initState() {
     super.initState();
     _session = PlaySession(inklings: widget.challenge.inklings);
-    ref
-        .read(challengeRepositoryProvider)
-        .incrementPlayCount(widget.challenge.id);
+    _startTicker();
+  }
+
+  void _startTicker() {
+    _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && !_finished) setState(() {});
     });
@@ -80,6 +82,16 @@ class _PlayViewState extends ConsumerState<_PlayView> {
 
   void _onTap(Offset normalised) {
     if (_finished) return;
+    // A play only counts once the player actually engages — counting on
+    // screen open would let idle visits inflate the trending ranking.
+    if (!_playCounted) {
+      _playCounted = true;
+      unawaited(
+        ref
+            .read(challengeRepositoryProvider)
+            .incrementPlayCount(widget.challenge.id),
+      );
+    }
     final result = _session.tap(normalised);
     setState(() {
       _lastMiss = result.hit ? null : normalised;
@@ -92,15 +104,33 @@ class _PlayViewState extends ConsumerState<_PlayView> {
     }
   }
 
+  void _replay() {
+    setState(() {
+      _finished = false;
+      _lastMiss = null;
+      _session.reset();
+    });
+    _startTicker();
+  }
+
   Future<void> _finish() async {
     if (_finished) return;
     _finished = true;
     _ticker?.cancel();
 
+    final completed = _session.isComplete;
     final score = _session.computeScore();
     final user = ref.read(authRepositoryProvider).currentUser;
 
     if (user != null) {
+      final attempts = ref.read(attemptRepositoryProvider);
+      // Progression pays out once per challenge: after the reveal has been
+      // seen, replays would be free XP.
+      final firstAttempt = !await attempts.hasAttempted(
+        widget.challenge.id,
+        user.uid,
+      );
+
       final attempt = Attempt(
         id: '',
         challengeId: widget.challenge.id,
@@ -112,22 +142,29 @@ class _PlayViewState extends ConsumerState<_PlayView> {
         taps: _session.taps,
         createdAt: DateTime.now(),
       );
-      await ref.read(attemptRepositoryProvider).save(attempt);
-      await ref
-          .read(challengeRepositoryProvider)
-          .recordBestTime(widget.challenge.id, _session.elapsed.inMilliseconds);
-      // Award XP for solving.
-      final xp =
-          AppConstants.xpPerChallengeSolved +
-          _session.foundCount * AppConstants.xpPerInklingFound;
-      await ref
-          .read(progressionServiceProvider)
-          .awardXp(
-            uid: user.uid,
-            xpDelta: xp,
-            challengesSolvedDelta: 1,
-            perfectSolvesDelta: _session.isComplete ? 1 : 0,
-          );
+      await attempts.save(attempt);
+
+      // A best time only makes sense for a fully solved round.
+      if (completed) {
+        await ref
+            .read(challengeRepositoryProvider)
+            .recordBestTime(
+              widget.challenge.id,
+              _session.elapsed.inMilliseconds,
+            );
+      }
+
+      final xp = _session.computeXp(firstAttempt: firstAttempt);
+      if (xp > 0) {
+        await ref
+            .read(progressionServiceProvider)
+            .awardXp(
+              uid: user.uid,
+              xpDelta: xp,
+              challengesSolvedDelta: completed ? 1 : 0,
+              perfectSolvesDelta: _session.isFlawless ? 1 : 0,
+            );
+      }
     }
 
     if (mounted) setState(() {});
@@ -212,13 +249,7 @@ class _PlayViewState extends ConsumerState<_PlayView> {
               durationMs: _session.elapsed.inMilliseconds,
               score: _session.computeScore(),
               revealUrl: widget.challenge.revealedImageUrl,
-              onReplay: () {
-                setState(() {
-                  _finished = false;
-                  _session.found.clear();
-                  _session.taps.clear();
-                });
-              },
+              onReplay: _replay,
               onDone: () => context.pop(),
             ),
 

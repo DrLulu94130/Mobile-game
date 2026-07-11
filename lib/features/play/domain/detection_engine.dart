@@ -31,11 +31,22 @@ class PlaySession {
   int get foundCount => found.length;
   bool get isComplete => found.length == inklings.length;
 
+  /// A flawless run: every Inkling found without a single wasted tap.
+  bool get isFlawless => isComplete && taps.length == foundCount;
+
   Duration get elapsed => _startedAt == null
       ? Duration.zero
       : DateTime.now().difference(_startedAt!);
 
   void start() => _startedAt ??= DateTime.now();
+
+  /// Returns the session to a pristine state for a replay, including the
+  /// clock — otherwise a rematch would inherit the previous run's time.
+  void reset() {
+    found.clear();
+    taps.clear();
+    _startedAt = null;
+  }
 
   /// Tests a tap in **normalised** canvas coordinates and records the result.
   DetectionResult tap(Offset normalised) {
@@ -66,6 +77,18 @@ class PlaySession {
     final speedBonus = speed * 300 * completion;
     final perfectBonus = isComplete ? 300 : 0;
     return (base + accuracyBonus + speedBonus + perfectBonus).round();
+  }
+
+  /// XP earned by this session.
+  ///
+  /// Each found Inkling pays out, but the solve bonus requires finding them
+  /// all — giving up early is not a "solve". Repeat attempts earn nothing:
+  /// once the solution has been seen, replays would be free XP farming.
+  int computeXp({required bool firstAttempt}) {
+    if (!firstAttempt) return 0;
+    final findXp = foundCount * AppConstants.xpPerInklingFound;
+    final solveBonus = isComplete ? AppConstants.xpPerChallengeSolved : 0;
+    return findXp + solveBonus;
   }
 }
 
