@@ -311,12 +311,27 @@ class _MeadowPainter extends CustomPainter {
     );
 
     // Layered hills, back to front.
-    _hill(canvas, size,
-        baseline: 0.46, bump: 0.14, color: const Color(0xFF00CEC9));
-    _hill(canvas, size,
-        baseline: 0.62, bump: 0.16, color: const Color(0xFF00A8A3));
-    _hill(canvas, size,
-        baseline: 0.80, bump: 0.14, color: const Color(0xFF4834D4));
+    _hill(
+      canvas,
+      size,
+      baseline: 0.46,
+      bump: 0.14,
+      color: const Color(0xFF00CEC9),
+    );
+    _hill(
+      canvas,
+      size,
+      baseline: 0.62,
+      bump: 0.16,
+      color: const Color(0xFF00A8A3),
+    );
+    _hill(
+      canvas,
+      size,
+      baseline: 0.80,
+      bump: 0.14,
+      color: const Color(0xFF4834D4),
+    );
 
     // Ink-drop accents on the foreground hill.
     final drop = Paint()..color = Colors.white.withValues(alpha: 0.25);
