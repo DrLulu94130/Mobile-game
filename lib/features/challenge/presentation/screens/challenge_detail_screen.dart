@@ -170,8 +170,7 @@ class _LikeButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final liked =
-        ref
+    final liked = ref
             .watch(likedProvider((challengeId: challengeId, uid: uid)))
             .valueOrNull ??
         false;

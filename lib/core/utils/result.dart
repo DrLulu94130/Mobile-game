@@ -10,9 +10,9 @@ sealed class Result<T> {
 
   /// Returns the success value or `null` when this is a failure.
   T? get valueOrNull => switch (this) {
-    Success<T>(:final value) => value,
-    Err<T>() => null,
-  };
+        Success<T>(:final value) => value,
+        Err<T>() => null,
+      };
 
   R when<R>({
     required R Function(T value) success,

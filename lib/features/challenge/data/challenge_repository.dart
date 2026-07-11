@@ -97,11 +97,11 @@ class ChallengeRepository {
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Failure _map(FirebaseException e) => switch (e.code) {
-    'permission-denied' => const PermissionFailure(),
-    'unavailable' => const NetworkFailure(),
-    'not-found' => const NotFoundFailure(),
-    _ => UnknownFailure(e.message ?? 'Firestore error'),
-  };
+        'permission-denied' => const PermissionFailure(),
+        'unavailable' => const NetworkFailure(),
+        'not-found' => const NotFoundFailure(),
+        _ => UnknownFailure(e.message ?? 'Firestore error'),
+      };
 }
 
 final challengeRepositoryProvider = Provider<ChallengeRepository>(
@@ -121,14 +121,14 @@ final dailyChallengesProvider = StreamProvider.autoDispose<List<Challenge>>(
   (ref) => ref.watch(challengeRepositoryProvider).watchDaily(),
 );
 
-final challengeByIdProvider = FutureProvider.autoDispose
-    .family<Challenge, String>((ref, id) async {
-      final result = await ref.watch(challengeRepositoryProvider).getById(id);
-      return result.when(success: (c) => c, failure: (f) => throw f);
-    });
+final challengeByIdProvider =
+    FutureProvider.autoDispose.family<Challenge, String>((ref, id) async {
+  final result = await ref.watch(challengeRepositoryProvider).getById(id);
+  return result.when(success: (c) => c, failure: (f) => throw f);
+});
 
-final challengesByAuthorProvider = StreamProvider.autoDispose
-    .family<List<Challenge>, String>(
-      (ref, authorId) =>
-          ref.watch(challengeRepositoryProvider).watchByAuthor(authorId),
-    );
+final challengesByAuthorProvider =
+    StreamProvider.autoDispose.family<List<Challenge>, String>(
+  (ref, authorId) =>
+      ref.watch(challengeRepositoryProvider).watchByAuthor(authorId),
+);

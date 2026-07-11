@@ -9,34 +9,34 @@ abstract class AppTheme {
   static const double radiusSmall = 12;
 
   static ThemeData get light => _base(
-    brightness: Brightness.light,
-    scheme: const ColorScheme.light(
-      primary: AppColors.ink,
-      secondary: AppColors.splash,
-      tertiary: AppColors.glow,
-      surface: AppColors.lightSurface,
-      error: AppColors.error,
-      onPrimary: Colors.white,
-      onSurface: AppColors.textStrong,
-    ),
-    scaffold: AppColors.lightBg,
-    surfaceAlt: AppColors.lightSurfaceAlt,
-  );
+        brightness: Brightness.light,
+        scheme: const ColorScheme.light(
+          primary: AppColors.ink,
+          secondary: AppColors.splash,
+          tertiary: AppColors.glow,
+          surface: AppColors.lightSurface,
+          error: AppColors.error,
+          onPrimary: Colors.white,
+          onSurface: AppColors.textStrong,
+        ),
+        scaffold: AppColors.lightBg,
+        surfaceAlt: AppColors.lightSurfaceAlt,
+      );
 
   static ThemeData get dark => _base(
-    brightness: Brightness.dark,
-    scheme: const ColorScheme.dark(
-      primary: AppColors.ink,
-      secondary: AppColors.splash,
-      tertiary: AppColors.glow,
-      surface: AppColors.darkSurface,
-      error: AppColors.error,
-      onPrimary: Colors.white,
-      onSurface: AppColors.textOnDark,
-    ),
-    scaffold: AppColors.darkBg,
-    surfaceAlt: AppColors.darkSurfaceAlt,
-  );
+        brightness: Brightness.dark,
+        scheme: const ColorScheme.dark(
+          primary: AppColors.ink,
+          secondary: AppColors.splash,
+          tertiary: AppColors.glow,
+          surface: AppColors.darkSurface,
+          error: AppColors.error,
+          onPrimary: Colors.white,
+          onSurface: AppColors.textOnDark,
+        ),
+        scaffold: AppColors.darkBg,
+        surfaceAlt: AppColors.darkSurfaceAlt,
+      );
 
   static ThemeData _base({
     required Brightness brightness,

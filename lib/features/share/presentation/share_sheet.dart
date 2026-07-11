@@ -36,9 +36,7 @@ class ShareSheet extends ConsumerWidget {
     WidgetRef ref,
     ShareTarget t,
   ) async {
-    await ref
-        .read(shareServiceProvider)
-        .share(
+    await ref.read(shareServiceProvider).share(
           target: t,
           camouflagedImage: camouflagedBytes,
           challengeId: challenge.id,

@@ -21,14 +21,14 @@ class Comment {
   final int likeCount;
 
   Map<String, dynamic> toJson() => {
-    'challengeId': challengeId,
-    'authorId': authorId,
-    'authorName': authorName,
-    'authorAvatarUrl': authorAvatarUrl,
-    'text': text,
-    'createdAt': createdAt.toUtc().toIso8601String(),
-    'likeCount': likeCount,
-  };
+        'challengeId': challengeId,
+        'authorId': authorId,
+        'authorName': authorName,
+        'authorAvatarUrl': authorAvatarUrl,
+        'text': text,
+        'createdAt': createdAt.toUtc().toIso8601String(),
+        'likeCount': likeCount,
+      };
 
   factory Comment.fromJson(String id, Map<String, dynamic> json) {
     return Comment(
@@ -38,8 +38,7 @@ class Comment {
       authorName: json['authorName'] as String? ?? 'Player',
       authorAvatarUrl: json['authorAvatarUrl'] as String?,
       text: json['text'] as String? ?? '',
-      createdAt:
-          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
     );

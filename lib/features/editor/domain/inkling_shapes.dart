@@ -24,30 +24,30 @@ abstract class InklingShapes {
   static List<_Eye> eyes(InklingSpecies species) {
     return switch (species) {
       InklingSpecies.classic => const [
-        _Eye(Offset(0.36, 0.42), 0.10),
-        _Eye(Offset(0.64, 0.42), 0.10),
-      ],
+          _Eye(Offset(0.36, 0.42), 0.10),
+          _Eye(Offset(0.64, 0.42), 0.10),
+        ],
       InklingSpecies.ghost => const [
-        _Eye(Offset(0.37, 0.40), 0.09),
-        _Eye(Offset(0.63, 0.40), 0.09),
-      ],
+          _Eye(Offset(0.37, 0.40), 0.09),
+          _Eye(Offset(0.63, 0.40), 0.09),
+        ],
       InklingSpecies.robot => const [
-        _Eye(Offset(0.35, 0.45), 0.11),
-        _Eye(Offset(0.65, 0.45), 0.11),
-      ],
+          _Eye(Offset(0.35, 0.45), 0.11),
+          _Eye(Offset(0.65, 0.45), 0.11),
+        ],
       InklingSpecies.dragon => const [
-        _Eye(Offset(0.38, 0.38), 0.08),
-        _Eye(Offset(0.62, 0.38), 0.08),
-      ],
+          _Eye(Offset(0.38, 0.38), 0.08),
+          _Eye(Offset(0.62, 0.38), 0.08),
+        ],
       InklingSpecies.alien => const [_Eye(Offset(0.50, 0.44), 0.16)],
       InklingSpecies.animal => const [
-        _Eye(Offset(0.38, 0.46), 0.10),
-        _Eye(Offset(0.62, 0.46), 0.10),
-      ],
+          _Eye(Offset(0.38, 0.46), 0.10),
+          _Eye(Offset(0.62, 0.46), 0.10),
+        ],
       InklingSpecies.monster => const [
-        _Eye(Offset(0.34, 0.40), 0.12),
-        _Eye(Offset(0.60, 0.36), 0.09),
-      ],
+          _Eye(Offset(0.34, 0.40), 0.12),
+          _Eye(Offset(0.60, 0.36), 0.09),
+        ],
     };
   }
 

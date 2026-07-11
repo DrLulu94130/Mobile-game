@@ -32,8 +32,8 @@ final attemptRepositoryProvider = Provider<AttemptRepository>(
   (ref) => AttemptRepository(ref.watch(firestoreProvider)),
 );
 
-final challengeLeaderboardProvider = StreamProvider.autoDispose
-    .family<List<Attempt>, String>(
-      (ref, challengeId) =>
-          ref.watch(attemptRepositoryProvider).watchLeaderboard(challengeId),
-    );
+final challengeLeaderboardProvider =
+    StreamProvider.autoDispose.family<List<Attempt>, String>(
+  (ref, challengeId) =>
+      ref.watch(attemptRepositoryProvider).watchLeaderboard(challengeId),
+);

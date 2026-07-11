@@ -24,23 +24,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   bool _showAuth = false;
 
   List<_Slide> _slidesFor(AppLocalizations l) => [
-    _Slide(
-      species: InklingSpecies.classic,
-      title: l.onboardTitle1,
-      body: l.onboardBody1,
-      hero3D: true,
-    ),
-    _Slide(
-      species: InklingSpecies.ghost,
-      title: l.onboardTitle2,
-      body: l.onboardBody2,
-    ),
-    _Slide(
-      species: InklingSpecies.dragon,
-      title: l.onboardTitle3,
-      body: l.onboardBody3,
-    ),
-  ];
+        _Slide(
+          species: InklingSpecies.classic,
+          title: l.onboardTitle1,
+          body: l.onboardBody1,
+          hero3D: true,
+        ),
+        _Slide(
+          species: InklingSpecies.ghost,
+          title: l.onboardTitle2,
+          body: l.onboardBody2,
+        ),
+        _Slide(
+          species: InklingSpecies.dragon,
+          title: l.onboardTitle3,
+          body: l.onboardBody3,
+        ),
+      ];
 
   @override
   void initState() {
@@ -357,8 +357,8 @@ class _AuthPanelState extends ConsumerState<_AuthPanel> {
               onPressed: loading
                   ? null
                   : () => ref
-                        .read(authControllerProvider.notifier)
-                        .signInAnonymously(),
+                      .read(authControllerProvider.notifier)
+                      .signInAnonymously(),
               icon: const Icon(Icons.play_arrow),
               label: Text(l.continueAsGuest),
             ),

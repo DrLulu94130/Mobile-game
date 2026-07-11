@@ -116,7 +116,8 @@ class AuthRepository {
     return switch (e.code) {
       'user-not-found' ||
       'wrong-password' ||
-      'invalid-credential' => 'Incorrect email or password',
+      'invalid-credential' =>
+        'Incorrect email or password',
       'email-already-in-use' => 'That email is already registered',
       'weak-password' => 'Please choose a stronger password',
       'invalid-email' => 'That email address looks invalid',

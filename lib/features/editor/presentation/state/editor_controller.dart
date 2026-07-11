@@ -220,9 +220,8 @@ class EditorController extends StateNotifier<EditorState> {
     final id = state.selectedId;
     if (id == null) return;
     state = state.copyWith(
-      inklings: state.inklings
-          .map((i) => i.id == id ? transform(i) : i)
-          .toList(),
+      inklings:
+          state.inklings.map((i) => i.id == id ? transform(i) : i).toList(),
     );
   }
 
@@ -261,8 +260,8 @@ class EditorController extends StateNotifier<EditorState> {
 
 final editorControllerProvider =
     StateNotifierProvider.autoDispose<EditorController, EditorState>(
-      (ref) => EditorController(),
-    );
+  (ref) => EditorController(),
+);
 
 /// Utility: rotate a point around a pivot, used to map screen taps into an
 /// Inkling's local (unrotated) space.

@@ -131,7 +131,7 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
     if (inklings.isEmpty) return 1;
     final avgStrokes =
         inklings.map((i) => i.strokes.length).reduce((a, b) => a + b) /
-        inklings.length;
+            inklings.length;
     final byCount = (inklings.length / 2).ceil();
     final byCamo = avgStrokes >= 6 ? 2 : (avgStrokes >= 2 ? 1 : 0);
     return (byCount + byCamo).clamp(1, 5);
@@ -140,5 +140,5 @@ class PublishController extends AutoDisposeAsyncNotifier<PublishOutput?> {
 
 final publishControllerProvider =
     AutoDisposeAsyncNotifierProvider<PublishController, PublishOutput?>(
-      PublishController.new,
-    );
+  PublishController.new,
+);

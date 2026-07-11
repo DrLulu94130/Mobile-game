@@ -72,15 +72,15 @@ final communityRepositoryProvider = Provider<CommunityRepository>(
   (ref) => CommunityRepository(ref.watch(firestoreProvider)),
 );
 
-final commentsProvider = StreamProvider.autoDispose
-    .family<List<Comment>, String>(
-      (ref, challengeId) =>
-          ref.watch(communityRepositoryProvider).watchComments(challengeId),
-    );
+final commentsProvider =
+    StreamProvider.autoDispose.family<List<Comment>, String>(
+  (ref, challengeId) =>
+      ref.watch(communityRepositoryProvider).watchComments(challengeId),
+);
 
-final likedProvider = StreamProvider.autoDispose
-    .family<bool, ({String challengeId, String uid})>(
-      (ref, args) => ref
-          .watch(communityRepositoryProvider)
-          .watchLiked(args.challengeId, args.uid),
-    );
+final likedProvider =
+    StreamProvider.autoDispose.family<bool, ({String challengeId, String uid})>(
+  (ref, args) => ref
+      .watch(communityRepositoryProvider)
+      .watchLiked(args.challengeId, args.uid),
+);

@@ -210,9 +210,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    final result = await ref
-        .read(publishControllerProvider.notifier)
-        .publish(
+    final result = await ref.read(publishControllerProvider.notifier).publish(
           photoBytes: widget.args.photoBytes,
           inklings: state.inklings,
           title: title,

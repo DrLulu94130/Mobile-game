@@ -73,16 +73,16 @@ class PlacedInkling {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'species': species.name,
-    'variantId': variantId,
-    'cx': center.dx,
-    'cy': center.dy,
-    'size': size,
-    'rotation': rotation,
-    'strokes': strokes.map((s) => s.toJson()).toList(),
-    if (spriteId != null) 'spriteId': spriteId,
-  };
+        'id': id,
+        'species': species.name,
+        'variantId': variantId,
+        'cx': center.dx,
+        'cy': center.dy,
+        'size': size,
+        'rotation': rotation,
+        'strokes': strokes.map((s) => s.toJson()).toList(),
+        if (spriteId != null) 'spriteId': spriteId,
+      };
 
   factory PlacedInkling.fromJson(Map<String, dynamic> json) {
     return PlacedInkling(

@@ -72,20 +72,20 @@ class AppUser {
   }
 
   Map<String, dynamic> toJson() => {
-    'displayName': displayName,
-    'email': email,
-    'avatarUrl': avatarUrl,
-    'isAnonymous': isAnonymous,
-    'isPremium': isPremium,
-    'xp': xp,
-    'level': level,
-    'streakDays': streakDays,
-    'lastActiveDay': lastActiveDay,
-    'challengesCreated': challengesCreated,
-    'challengesSolved': challengesSolved,
-    'badgeIds': badgeIds,
-    'followerCount': followerCount,
-  };
+        'displayName': displayName,
+        'email': email,
+        'avatarUrl': avatarUrl,
+        'isAnonymous': isAnonymous,
+        'isPremium': isPremium,
+        'xp': xp,
+        'level': level,
+        'streakDays': streakDays,
+        'lastActiveDay': lastActiveDay,
+        'challengesCreated': challengesCreated,
+        'challengesSolved': challengesSolved,
+        'badgeIds': badgeIds,
+        'followerCount': followerCount,
+      };
 
   factory AppUser.fromJson(String uid, Map<String, dynamic> json) {
     return AppUser(

@@ -122,9 +122,8 @@ class EditorToolbars extends StatelessWidget {
                 onTap: () => controller.setTool(EditorTool.eraser),
               ),
               _ToolButton(
-                icon: state.zoomEnabled
-                    ? Icons.zoom_in
-                    : Icons.zoom_in_outlined,
+                icon:
+                    state.zoomEnabled ? Icons.zoom_in : Icons.zoom_in_outlined,
                 label: l.toolZoom,
                 active: state.zoomEnabled,
                 onTap: controller.toggleZoom,
@@ -300,8 +299,8 @@ class _ToolButton extends StatelessWidget {
     final color = !enabled
         ? Colors.white24
         : active
-        ? AppColors.splash
-        : Colors.white;
+            ? AppColors.splash
+            : Colors.white;
     return GestureDetector(
       onTap: enabled ? onTap : null,
       child: Column(

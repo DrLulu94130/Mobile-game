@@ -40,11 +40,11 @@ class DrawStroke {
   }
 
   Map<String, dynamic> toJson() => {
-    'p': points.expand((o) => [o.dx, o.dy]).toList(),
-    'c': color.value,
-    'w': width,
-    'e': isEraser,
-  };
+        'p': points.expand((o) => [o.dx, o.dy]).toList(),
+        'c': color.value,
+        'w': width,
+        'e': isEraser,
+      };
 
   factory DrawStroke.fromJson(Map<String, dynamic> json) {
     final flat = (json['p'] as List).cast<num>();
